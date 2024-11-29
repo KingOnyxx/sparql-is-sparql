@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Airport Details - {{ airport_data.name }}</h1>
+    <table class="table table-bordered">
+        <tr><th>Id</th><td>{{ airport_data.ident }}</td></tr>
+        <tr><th>Type</th><td>{{ airport_data.type }}</td></tr>
+        <tr><th>Ident</th><td>{{ airport_data.ident }}</td></tr>
+        <tr><th>Name</th><td>{{ airport_data.name }}</td></tr>
+        <tr><th>IATA Code</th><td>{{ airport_data.iata_code }}</td></tr>
+        <tr><th>GPS Code</th><td>{{ airport_data.gps_code }}</td></tr>
+        <tr><th>Local Code</th><td>{{ airport_data.local_code }}</td></tr>
+        <tr><th>Scheduled Service</th><td>{{ airport_data.scheduled_service }}</td></tr>
+        <tr><th>Municipality</th><td>{{ airport_data.municipality_label }}</td></tr>
+        <tr><th>Region</th><td><a href="{% url 'region_details' region_id=airport_data.iso_region %}" class="highlighted-cell">{{ airport_data.region_label }}</a></td></tr>
+        <tr><th>Country</th><td><a href="{% url 'country_details' country_code=airport_data.iso_country %}" class="highlighted-cell">{{ airport_data.country_label }}</a></td></tr>
+        <tr><th>Continent</th><td>{{ airport_data.continent }}</td></tr>
+        <tr><th>Latitude (deg)</th><td>{{ airport_data.latitude_deg }}</td></tr>
+        <tr><th>Longitude (deg)</th><td>{{ airport_data.longitude_deg }}</td></tr>
+        <tr><th>Elevation (ft)</th><td>{{ airport_data.elevation_ft }}</td></tr>
+
+        <!-- Handling Runways -->
+        <tr><th>Runways</th>
+            <td>
+                {% if airport_data.runway_labels %}
+                    <ul>
+                        {% for runway, runway_id in paired_runways %}
+                            <li><a href="{% url 'runway_details' runway_id=runway_id %}" class="highlighted-cell">{{ runway }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No runways listed.
+                {% endif %}
+            </td>
+        </tr>
+
+        <!-- Handling Navaids -->
+        <tr><th>Navaids</th>
+            <td>
+                {% if airport_data.navaid_labels %}
+                    <ul>
+                        {% for navaid_label, navaid_id, navaid_ident in tripled_navaids %}
+                        <li><a href="{% url 'navaid_details' navaid_id=navaid_id %}" class="highlighted-cell">{{ navaid_label }} - {{ navaid_ident }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No navaids listed.
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
