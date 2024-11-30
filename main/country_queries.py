@@ -31,7 +31,7 @@ def get_flag(iso_country, wikidata_sparql):
     return flag_url
 
 
-def runway_queries(id, sparql):
+def country_queries(id, sparql):
     print(type(id))
     print(id)
     final_result = dict()

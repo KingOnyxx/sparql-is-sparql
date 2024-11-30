@@ -25,9 +25,6 @@ def results_view(request):
     paired_airports = zip(results_data['airports'], results_data['airport_labels'])
     # print(results_data['airports'])
     # print(results_data['airport_labels'])
-
-    # Get data for regions
-    regions_result = region_queries(query, SPARQL)
     
 
     return render(request, 'results_page.html', {
@@ -173,15 +170,24 @@ def region_view(request, region_id):
     results = region_queries(region_id, SPARQL)
 
     print(results)
-
-    # Example data for a region
     region_data = {
-        'id': 'R123',
-        'code': 'R001',
-        'local_code': 'RC1',
-        'name': 'North America',
-        'continent': 'North America',
-        'iso_country': 'US',
-        'airports': 'Multiple Airports'
+        'id': results.get("region", "")[27:],
+        'code': results.get("hasID", "")[27:]   ,
+        'local_code': results.get("hasLocalCode", ""),
+        'name': results.get("label", ""),
+        # 'continent': results.get("continent", "")[27:],
+        'iso_country': results.get("country", "")[27:],
+        'country_label': results.get("labelCountry", "")
+        # 'airports': results.get("airports", [])
     }
+    # Example data for a region
+    # region_data = {
+    #     'id': 'R123',
+    #     'code': 'R001',
+    #     'local_code': 'RC1',
+    #     'name': 'North America',
+    #     'continent': 'North America',
+    #     'iso_country': 'US',
+    #     'airports': 'Multiple Airports'
+    # }
     return render(request, 'regions_page.html', {'region_data': region_data, 'page': {'title': 'Region Details'}})

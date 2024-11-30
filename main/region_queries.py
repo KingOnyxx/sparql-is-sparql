@@ -52,15 +52,21 @@ def region_queries(id, sparql):
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX : <http://myairports.com/data/>
-                    
-    SELECT ?region ?label ?hasID ?hasLocalCode ?partOf
+
+    SELECT ?region ?label ?hasID ?hasLocalCode ?country ?labelCountry
     WHERE {
         ?region rdf:type :region .
         OPTIONAL { ?region rdfs:label ?label . }
         OPTIONAL { ?region v:hasID ?hasID . }
         OPTIONAL { ?region v:hasLocalCode ?hasLocalCode . }
-        OPTIONAL { ?region v:partOf ?partOf . }
-        FILTER(?label = \"""" + id + """\")
+        OPTIONAL { ?region v:partOf ?country . }
+        OPTIONAL {?country a v:country ;
+                            rdfs:label ?labelCountry.
+
+        }
+
+        FILTER(isIRI(?country))
+        FILTER(?region = :""" + id + """)
     }
     LIMIT 100
     """)
