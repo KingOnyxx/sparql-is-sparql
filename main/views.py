@@ -2,10 +2,14 @@ from django.shortcuts import render
 from rdflib import Graph, URIRef, Literal, Namespace
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries
-from .country_queries import get_flag
+from .country_queries import get_flag, cotw_queries
 from .navaid_queries import navaid_queries
 
-SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+# punya joel
+# SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+
+# punya adrial
+SPARQL = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 # Create your views here.
@@ -115,36 +119,80 @@ def runway_view(request, runway_id):
 
 
 def country_view(request, iso_country):
+    # Get the flag URL using the get_flag function
     flag_url = get_flag(iso_country, WIKIDATA_SPARQL)
-    
-    # Example data for a country
+
+    # Example data fetching (replace with actual SPARQL queries using cotw_queries)
+    try:
+        result = cotw_queries(iso_country, SPARQL)
+    except ValueError:
+        result = {}
+
+    # Populate the country data dynamically
     country_data = {
-        'code': 'US',
-        'name': 'United States',
-        'continent': 'North America',
-        'airports': 'Airports in US',
-        'regions_contained': 'Northeast, West Coast',
-        'region_is_contained_in': 'America',
-        'population': '331000000',
-        'area': '9833520',
-        'pop_density': '33.5',
-        'coastline': '190000',
-        'net_migration': '0.5',
-        'infant_mortality': '5.6',
-        'gdp': '21137518',
-        'literacy': '99%',
-        'phones': '120',
-        'arable': '15%',
-        'crops': 'Wheat, Corn, Rice',
-        'other': 'Timber, Oil',
-        'climate': 'Varied',
-        'birthrate': '12.4',
-        'deathrate': '8.3',
-        'agriculture': '5%',
-        'industry': '30%',
-        'service': '65%'
+        'code': iso_country,
+        'name': result.get("label", ""),
+        'continent': result.get("continentCode", ""),
+        # 'continent_label': result.get("continentCode", "")[27:],
+        'airports': result.get("airports", ""),
+        'airports_labels': result.get("airports_labels", ""),
+
+        ######################### masih belom ##############################
+        'regions_contained': result.get("regions_contained", ""),
+        'regions_contained_labels': result.get("regions_contained_labels", ""),
+        ####################################################################
+
+        'region_is_contained_in': result.get("Region", ""),
+        'region_is_contained_in_label': result.get("Region", "")[29:],
+        'region': result.get("Region", ""),
+        'population': result.get("Population", ""),
+        'area': result.get("AreaInSquareMiles", ""),
+        'pop_density': result.get("PopulationDensityPerSquareMiles", ""),
+        'coastline': result.get("CoastlineRatio", ""),
+        'net_migration': result.get("NetMigration", ""),
+        'infant_mortality': result.get("InfantMortality", ""),
+        'gdp': result.get("GDPInUSD", ""),
+        'literacy': result.get("LiteracyRate", ""),
+        'phones': result.get("Phones", ""),
+        'arable': result.get("arablePercentage", ""),
+        'crops': result.get("cropsPercentage", ""),
+        'other': result.get("othersPercentage", ""),
+        'climate': result.get("Climate", ""),
+        'birthrate': result.get("Birthrate", ""),
+        'deathrate': result.get("Deathrate", ""),
+        'agriculture': result.get("AgricultureRatio", ""),
+        'industry': result.get("IndustryRatio", ""),
+        'service': result.get("ServiceRatio", "")
     }
-    return render(request, 'countries_page.html', {'country_data': country_data, 'page': {'title': 'Country Details'}, 'flag_url': flag_url})
+
+    airports = [
+        {
+            "label": label,
+            "id": airport.split("/")[-1] 
+        }
+        for label, airport in zip(country_data['airports_labels'], country_data['airports'])
+    ]
+
+    regions = [
+        {
+            "label": label,
+            "id": region.split("/")[-1] 
+        }
+        for label, region in zip(country_data['regions_contained_labels'], country_data['regions_contained'])
+    ]
+    print(regions)
+
+    return render(
+        request,
+        'countries_page.html',
+        {
+            'country_data': country_data,
+            'page': {'title': 'Country Details'},
+            'flag_url': flag_url,
+            'airports_list': airports,
+            'regions_list': regions
+        }
+    )
 
 
 

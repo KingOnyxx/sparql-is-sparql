@@ -18,9 +18,41 @@
         <tr><th>Code</th><td>{{ country_data.code }}</td></tr>
         <tr><th>Name</th><td>{{ country_data.name }}</td></tr>
         <tr><th>Continent</th><td><a href="/continent/{{ country_data.continent }}" class="highlighted-cell">{{ country_data.continent }}</a></td></tr>
-        <tr><th>Airports</th><td><a href="/airports/{{ country_data.airports }}" class="highlighted-cell">{{ country_data.airports }}</a></td></tr>
-        <tr><th>Regions Contained</th><td><a href="/regions/{{ country_data.regions_contained }}" class="highlighted-cell">{{ country_data.regions_contained }}</a></td></tr>
-        <tr><th>Region is Contained In</th><td><a href="/region/{{ country_data.region_is_contained_in }}" class="highlighted-cell">{{ country_data.region_is_contained_in }}</a></td></tr>
+        <!-- For Airports -->
+        <tr>
+            <th>Airports</th>
+            <td>
+                <ul>
+                    {% for airport in airports_list %}
+                        <li>
+                            <a href="{% url 'airport_details' airport_id=airport.id %}" class="highlighted-cell">
+                                {{ airport.label }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        
+        
+        <!-- For Regions Contained in the country -->
+        <tr>
+            <th>Regions Contained</th>
+            <td>
+                <ul>
+                    {% for region in regions_list %}
+                        <li>
+                            <a href="{% url 'region_details' region_id=region.id %}" class="highlighted-cell">
+                                {{ region.label }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        
+        
+        <tr><th>Region is Contained In</th><td><a href="/region/{{ country_data.region_is_contained_in }}" class="highlighted-cell">{{ country_data.region_is_contained_in_label }}</a></td></tr>
         <tr><th>Population</th><td>{{ country_data.population }}</td></tr>
         <tr><th>Area</th><td>{{ country_data.area }}</td></tr>
         <tr><th>Population Density</th><td>{{ country_data.pop_density }}</td></tr>

@@ -1,38 +1,43 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 # GraphDB SPARQL endpoint
-sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+# punya joel
+# sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+
+# punya adrial
+sparql = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
 final_result=dict()
 # Set the SPARQL query
 sparql.setQuery("""
-PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-PREFIX v: <http://myairports.com/vocab#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX c: <http://example.org/countries/> 
-PREFIX : <http://myairports.com/data/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX c: <http://example.org/countries/>
+    PREFIX v: <http://myairports.com/data/>
 
-select * where {
-?navaid rdf:type :navaid.
-optional{?navaid rdfs:label ?name.}
-optional{?navaid rdf:type ?type.}
-optional{?navaid v:ident ?ident.}
-optional{?navaid v:usage_type ?usage_type.}
-optional{?navaid v:power_type ?power.}
-optional{?navaid v:icao_code ?airport_id.
-        ?airport rdf:type :airport;
-                    v:ident ?airport_id.}
-optional{?navaid v:magnetic_var ?magnetic_variation_deg.}
-optional{?navaid v:country ?iso_country.}
-optional{?navaid geo:long ?longitude_deg.}
-optional{?navaid geo:alt ?elevation_ft.}
-optional{?navaid geo:lat ?latitude_deg.}
-optional{?navaid v:frequency ?frequency_khz.}
-                
-FILTER(?navaid = :""" + "95303" + """ && ?type != :navaid)
-} limit 100
+    SELECT DISTINCT * WHERE {{
+        ?country v:isPartOfRegion ?type .
 
+        OPTIONAL {{?country v:hasPopulation ?Population . }}
+        OPTIONAL {{?country v:hasAreaInSquareMiles ?AreaInSquareMiles . }}
+        OPTIONAL {{?country v:hasPopulationDensityPerSquareMiles ?PopulationDensityPerSquareMiles . }}
+        OPTIONAL {{?country v:hasCoastlineRatio ?CoastlineRatio . }}
+        OPTIONAL {{?country v:hasNetMigration ?NetMigration . }}
+        OPTIONAL {{?country v:hasInfantMortality ?InfantMortality . }}
+        OPTIONAL {{?country v:hasGDPInUSD ?GDPInUSD . }}
+        OPTIONAL {{?country v:hasLiteracyRate ?hasLiteracyRate . }}
+        OPTIONAL {{?country v:hasPhones ?hasPhones . }}
+        OPTIONAL {{?country v:arablePercentage ?arablePercentage . }}
+        OPTIONAL {{?country v:cropsPercentage ?cropsPercentage . }}
+        OPTIONAL {{?country v:othersPercentage ?othersPercentage . }}
+        OPTIONAL {{?country v:hasClimate ?hasClimate . }}
+        OPTIONAL {{?country v:hasBirthrate ?hasBirthrate . }}
+        OPTIONAL {{?country v:hasDeathrate ?hasDeathrate . }}
+        OPTIONAL {{?country v:hasAgricultureRatio ?hasAgricultureRatio . }}
+        OPTIONAL {{?country v:hasIndustryRatio ?hasIndustryRatio . }}
+        OPTIONAL {{?country v:hasServiceRatio ?hasServiceRatio . }}
+        OPTIONAL {{?country v:label ?label . }}
+
+        FILTER(?country = c:Afghanistan).
+                }}
 
 """)
 
