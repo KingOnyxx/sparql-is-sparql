@@ -12,11 +12,11 @@
         <tr><th>Latitude (deg)</th><td>{{ navaid_data.latitude_deg }}</td></tr>
         <tr><th>Longitude (deg)</th><td>{{ navaid_data.longitude_deg }}</td></tr>
         <tr><th>Elevation (ft)</th><td>{{ navaid_data.elevation_ft }}</td></tr>
-        <tr><th>Iso Country</th><td><a href="/country/{{ navaid_data.iso_country }}" class="highlighted-cell">{{ navaid_data.iso_country }}</a></td></tr>
+        <tr><th>Iso Country</th><td><a href="{% url 'country_details' iso_country=navaid_data.iso_country %}" class="highlighted-cell">{{ navaid_data.iso_country }}</a></td></tr>
         <tr><th>Magnetic Variation (deg)</th><td>{{ navaid_data.magnetic_variation_deg }}</td></tr>
         <tr><th>Usage Type</th><td>{{ navaid_data.usageType }}</td></tr>
         <tr><th>Power</th><td>{{ navaid_data.power }}</td></tr>
-        <tr><th>Associated Airport</th><td><a href="/airport/{{ navaid_data.associated_airport }}" class="highlighted-cell">{{ navaid_data.associated_airport }}</a></td></tr>
+        <tr><th>Associated Airport</th><td><a href="{% url 'airport_details' airport_id=navaid_data.associated_airport %}" class="highlighted-cell">{{ navaid_data.associated_airport }}</a></td></tr>
     </table>
 </div>
 {% endblock %}

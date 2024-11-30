@@ -14,7 +14,7 @@
         <tr><th>Scheduled Service</th><td>{{ airport_data.scheduled_service }}</td></tr>
         <tr><th>Municipality</th><td>{{ airport_data.municipality_label }}</td></tr>
         <tr><th>Region</th><td><a href="{% url 'region_details' region_id=airport_data.iso_region %}" class="highlighted-cell">{{ airport_data.region_label }}</a></td></tr>
-        <tr><th>Country</th><td><a href="{% url 'country_details' country_code=airport_data.iso_country %}" class="highlighted-cell">{{ airport_data.country_label }}</a></td></tr>
+        <tr><th>Country</th><td><a href="{% url 'country_details' iso_country=airport_data.iso_country %}" class="highlighted-cell">{{ airport_data.country_label }}</a></td></tr>
         <tr><th>Continent</th><td>{{ airport_data.continent }}</td></tr>
         <tr><th>Latitude (deg)</th><td>{{ airport_data.latitude_deg }}</td></tr>
         <tr><th>Longitude (deg)</th><td>{{ airport_data.longitude_deg }}</td></tr>

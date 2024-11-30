@@ -3,6 +3,7 @@ from rdflib import Graph, URIRef, Literal, Namespace
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries
 from .country_queries import get_flag
+from .navaid_queries import navaid_queries
 
 SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
@@ -36,30 +37,31 @@ def airport_view(request, airport_id):
 
     # Example airport data (replace with actual data)
     airport_data = {
-        'id' : airport_id,
-        'type': result["type"][27:].replace("_", " "),
-        'name': result["name"],
-        'ident': result["ident"],
-        'iata_code': result["iata_code"],
-        'gps_code': result["gps_code"],
-        'scheduled_service': result["scheduled_service"],
-        'municipality': result["municipality"][27:],
-        'municipality_label': result["municipality_label"].replace("_", " "),
-        'iso_region': result["iso_region"][27:],
-        'region_label': result["region_label"],
-        'iso_country': result["iso_country"][27:],
-        'country_label': result["country_label"],
-        'continent': result["continent"][27:],
-        'latitude_deg': result["latitude_deg"],
-        'longitude_deg': result["longitude_deg"],
-        'elevation_ft': result["elevation_ft"],
-        'runways': result["runways"],
-        'runway_ids': [runway[27:] for runway in result["runways"]],
-        'runway_labels': result["runway_labels"],
-        'navaids': result["navaids"],
-        'navaid_ids': [navaid[27:] for navaid in result["navaids"]],
-        'navaid_labels': result["navaid_labels"],
-        'navaid_idents': result ["navaid_idents"]
+    'id': airport_id,
+    'type': result.get("type", "")[27:].replace("_", " ") if result.get("type", "") else "",
+    'name': result.get("name", ""),
+    'ident': result.get("ident", ""),
+    'iata_code': result.get("iata_code", ""),
+    'gps_code': result.get("gps_code", ""),
+    'local_code': result.get("local_code", ""),
+    'scheduled_service': result.get("scheduled_service", ""),
+    'municipality': result.get("municipality", "")[27:] if result.get("municipality", "") else "",
+    'municipality_label': result.get("municipality_label", "").replace("_", " "),
+    'iso_region': result.get("iso_region", "")[27:] if result.get("iso_region", "") else "",
+    'region_label': result.get("region_label", ""),
+    'iso_country': result.get("iso_country", "")[27:] if result.get("iso_country", "") else "",
+    'country_label': result.get("country_label", ""),
+    'continent': result.get("continent", "")[27:] if result.get("continent", "") else "",
+    'latitude_deg': result.get("latitude_deg", ""),
+    'longitude_deg': result.get("longitude_deg", ""),
+    'elevation_ft': result.get("elevation_ft", ""),
+    'runways': result.get("runways", []),
+    'runway_ids': [runway[27:] for runway in result.get("runways", [])],
+    'runway_labels': result.get("runway_labels", []),
+    'navaids': result.get("navaids", []),
+    'navaid_ids': [navaid[27:] for navaid in result.get("navaids", [])],
+    'navaid_labels': result.get("navaid_labels", []),
+    'navaid_idents': result.get("navaid_idents", [])
     }
 
     paired_runways = zip(airport_data['runway_labels'], airport_data['runway_ids'])
@@ -68,6 +70,47 @@ def airport_view(request, airport_id):
     return render(request, 'airports_page.html', {'airport_data': airport_data, 'paired_runways': paired_runways, 
                                                   'tripled_navaids': tripled_navaids, 'page': {'title': 'Airport Details'}})
 
+
+def navaid_view(request, navaid_id):
+    result = navaid_queries(navaid_id, SPARQL)
+    print(result)
+    # Example data for a navaid
+    
+    navaid_data = {
+    'id': result.get("navaid", "")[27:],
+    'ident': result.get("ident", ""),
+    'name': result.get("name", ""),
+    'type': result.get("type", "")[27:],
+    'frequency_khz': result.get("frequency_khz", ""),
+    'latitude_deg': result.get("latitude_deg", ""),
+    'longitude_deg': result.get("longitude_deg", ""),
+    'elevation_ft': result.get("elevation_ft", ""),
+    'iso_country': result.get("iso_country", "")[27:],
+    'magnetic_variation_deg': result.get("magnetic_variation_deg", ""),
+    'usageType': result.get("usage_type", "")[27:],
+    'power': result.get("power", "")[27:],
+    'airport_id': result.get("airport_id", ""),
+    'associated_airport': result.get("airport", "")[27:]
+    }
+
+    print(navaid_data["airport_id"])
+    return render(request, 'navaids_page.html', {'navaid_data': navaid_data, 'page': {'title': 'Navaid Details'}})
+
+
+def runway_view(request, runway_id):
+    # Example data for a runway
+    runway_data = {
+        'id': 'RW123',
+        'airport_ref': 'LAX',
+        'airport_ident': 'LAX Runway 1',
+        'length_ft': '12000',
+        'width_ft': '200',
+        'surface': 'Asphalt',
+        'lighted': 'Yes',
+        'closed': 'No',
+        'le_ident': 'RWY1'
+    }
+    return render(request, 'runways_page.html', {'runway_data': runway_data, 'page': {'title': 'Runway Details'}})
 
 
 
@@ -106,24 +149,7 @@ def country_view(request, iso_country):
 
 
 
-def navaid_view(request, navaid_id):
-    # Example data for a navaid
-    navaid_data = {
-        'id': 'N123',
-        'ident': 'VOR1',
-        'name': 'VOR Station 1',
-        'type': 'VOR',
-        'frequency_khz': '115.9',
-        'latitude_deg': '33.5',
-        'longitude_deg': '-118.5',
-        'elevation_ft': '450',
-        'iso_country': 'US',
-        'magnetic_variation_deg': '5.2',
-        'usageType': 'Commercial',
-        'power': '50 Watts',
-        'associated_airport': 'LAX'
-    }
-    return render(request, 'navaids_page.html', {'navaid_data': navaid_data, 'page': {'title': 'Navaid Details'}})
+
 
 
 
@@ -139,22 +165,3 @@ def region_view(request, region_id):
         'airports': 'Multiple Airports'
     }
     return render(request, 'regions_page.html', {'region_data': region_data, 'page': {'title': 'Region Details'}})
-
-
-
-
-
-def runway_view(request, runway_id):
-    # Example data for a runway
-    runway_data = {
-        'id': 'RW123',
-        'airport_ref': 'LAX',
-        'airport_ident': 'LAX Runway 1',
-        'length_ft': '12000',
-        'width_ft': '200',
-        'surface': 'Asphalt',
-        'lighted': 'Yes',
-        'closed': 'No',
-        'le_ident': 'RWY1'
-    }
-    return render(request, 'runways_page.html', {'runway_data': runway_data, 'page': {'title': 'Runway Details'}})
