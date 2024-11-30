@@ -5,18 +5,16 @@ sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 
 # Set the SPARQL query
 sparql.setQuery("""
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX v: <http://myairports.com/vocab#>
-PREFIX : <http://myairports.com/data/>
-
-select distinct ?navaid ?navaid_label ?navaid_ident where {
-    ?navaid v:icao_code "CYCD";
-    		rdfs:label ?navaid_label;
-    		v:ident ?navaid_ident .
-    ?airport v:ident "CYCD" .
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX : <http://myairports.com/data/>            
     
-   
-}  order by ?navaid_label
+    select ?iso_country ?label where {
+        ?iso_country rdf:type :country ;
+                rdfs:label ?label .
+            
+        FILTER(?iso_country = :BN)
+    } limit 100
 """)
 
 # Set the output format to JSON
@@ -31,18 +29,15 @@ if (len(results["results"]["bindings"]) == 0):
     raise ValueError
 
 
-navaids = []
-navaid_labels = []
-navaid_idents = []
+countries = []
+
 
 for result in results["results"]["bindings"]:
-    navaids.append(result["navaid"]["value"])
-    navaid_labels.append(result["navaid_label"]["value"])
-    navaid_idents.append(result["navaid_ident"]["value"])
+    print(result)
+    countries.append(result["label"]["value"])
 
-print(navaids)
-print(navaid_labels)
-print(navaid_idents)
+
+print(countries)
 
 
 

@@ -2,8 +2,10 @@ from django.shortcuts import render
 from rdflib import Graph, URIRef, Literal, Namespace
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries
+from .country_queries import get_flag
 
 SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 # Create your views here.
 
@@ -69,7 +71,9 @@ def airport_view(request, airport_id):
 
 
 
-def country_view(request, country_code):
+def country_view(request, iso_country):
+    flag_url = get_flag(iso_country, WIKIDATA_SPARQL)
+    
     # Example data for a country
     country_data = {
         'code': 'US',
@@ -97,7 +101,7 @@ def country_view(request, country_code):
         'industry': '30%',
         'service': '65%'
     }
-    return render(request, 'countries_page.html', {'country_data': country_data, 'page': {'title': 'Country Details'}})
+    return render(request, 'countries_page.html', {'country_data': country_data, 'page': {'title': 'Country Details'}, 'flag_url': flag_url})
 
 
 
