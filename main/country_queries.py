@@ -139,6 +139,7 @@ def cotw_queries(country_code, sparql):
     select * where {{
         ?regionId va:partOf ?isoCountry.
         ?regionId rdfs:label ?regionName.
+        ?regionId va:hasLocalCode ?code.
         
         FILTER(?isoCountry = v:{country_code})
     }}
@@ -158,6 +159,8 @@ def cotw_queries(country_code, sparql):
 
     final_result["regions_contained"] = regions_contained
     final_result["regions_contained_labels"] = regions_contained_labels
+
+    print(final_result['regions_contained'])
     
 
     return final_result

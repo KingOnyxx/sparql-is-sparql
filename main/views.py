@@ -7,6 +7,7 @@ from .runway_queries import runway_queries
 from .search_queries import search_queries
 from .region_queries import region_queries
 from django.shortcuts import render
+from django.core.paginator import Paginator
 
 # punya joel
 # SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
@@ -134,7 +135,6 @@ def country_view(request, iso_country):
     # Get the flag URL using the get_flag function
     flag_url = get_flag(iso_country, WIKIDATA_SPARQL)
 
-
     # Example data fetching (replace with actual SPARQL queries using cotw_queries)
     try:
         result = cotw_queries(iso_country, SPARQL)
@@ -146,18 +146,14 @@ def country_view(request, iso_country):
         'code': iso_country,
         'name': result.get("label", ""),
         'continent': result.get("continentCode", ""),
-        # 'continent_label': result.get("continentCode", "")[27:],
         'airports': result.get("airports", ""),
         'airports_labels': result.get("airports_labels", ""),
 
-        ######################### masih belom ##############################
         'regions_contained': result.get("regions_contained", ""),
         'regions_contained_labels': result.get("regions_contained_labels", ""),
-        ####################################################################
-
+        
         'region_is_contained_in': result.get("Region", ""),
         'region_is_contained_in_label': result.get("Region", "")[29:],
-        'region': result.get("Region", ""),
         'population': result.get("Population", ""),
         'area': result.get("AreaInSquareMiles", ""),
         'pop_density': result.get("PopulationDensityPerSquareMiles", ""),
@@ -178,22 +174,31 @@ def country_view(request, iso_country):
         'service': result.get("ServiceRatio", "")
     }
 
-    airports = [
-        {
-            "label": label,
-            "id": airport.split("/")[-1] 
-        }
+    airport_data = [
+        {"label": label, "id": airport.split("/")[-1]}
         for label, airport in zip(country_data['airports_labels'], country_data['airports'])
     ]
+    unique_airports = list({f"{item['label']}_{item['id']}": item for item in airport_data}.values())
 
-    regions = [
-        {
-            "label": label,
-            "id": region.split("/")[-1] 
-        }
+
+    # Remove duplicates while preserving order for regions
+    region_data = [
+        {"label": label, "id": region.split("/")[-1]}
         for label, region in zip(country_data['regions_contained_labels'], country_data['regions_contained'])
     ]
-    print(regions)
+    unique_regions = list({f"{item['label']}_{item['id']}": item for item in region_data}.values())
+
+
+    # Paginate airports
+    airport_page_number = request.GET.get("airport_page", 1)
+    airport_paginator = Paginator(unique_airports, 10)
+    airports_page = airport_paginator.get_page(airport_page_number)
+
+    # Paginate regions
+    region_page_number = request.GET.get("region_page", 1)
+    region_paginator = Paginator(unique_regions, 10)
+    regions_page = region_paginator.get_page(region_page_number)
+
 
     return render(
         request,
@@ -202,8 +207,8 @@ def country_view(request, iso_country):
             'country_data': country_data,
             'page': {'title': 'Country Details'},
             'flag_url': flag_url,
-            'airports_list': airports,
-            'regions_list': regions
+            'airports_page': airports_page,
+            'regions_page': regions_page
         }
     )
 
@@ -217,7 +222,6 @@ def country_view(request, iso_country):
 def region_view(request, region_id):
     results = region_queries(region_id, SPARQL)
 
-    print(results)
     region_data = {
         'id': results.get("region", "")[27:],
         'code': results.get("hasID", "")[27:]   ,

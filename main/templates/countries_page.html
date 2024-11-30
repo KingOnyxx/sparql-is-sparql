@@ -23,7 +23,7 @@
             <th>Airports</th>
             <td>
                 <ul>
-                    {% for airport in airports_list %}
+                    {% for airport in airports_page %}
                         <li>
                             <a href="{% url 'airport_details' airport_id=airport.id %}" class="highlighted-cell">
                                 {{ airport.label }}
@@ -31,16 +31,23 @@
                         </li>
                     {% endfor %}
                 </ul>
+                <div class="pagination">
+                    {% if airports_page.has_previous %}
+                        <a href="?airport_page={{ airports_page.previous_page_number }}&region_page={{ regions_page.number }}">Previous</a>
+                    {% endif %}
+                    <span>Page {{ airports_page.number }} of {{ airports_page.paginator.num_pages }}</span>
+                    {% if airports_page.has_next %}
+                        <a href="?airport_page={{ airports_page.next_page_number }}&region_page={{ regions_page.number }}">Next</a>
+                    {% endif %}
+                </div>
             </td>
         </tr>
         
-        
-        <!-- For Regions Contained in the country -->
         <tr>
             <th>Regions Contained</th>
             <td>
                 <ul>
-                    {% for region in regions_list %}
+                    {% for region in regions_page %}
                         <li>
                             <a href="{% url 'region_details' region_id=region.id %}" class="highlighted-cell">
                                 {{ region.label }}
@@ -48,6 +55,15 @@
                         </li>
                     {% endfor %}
                 </ul>
+                <div class="pagination">
+                    {% if regions_page.has_previous %}
+                        <a href="?region_page={{ regions_page.previous_page_number }}&airport_page={{ airports_page.number }}">Previous</a>
+                    {% endif %}
+                    <span>Page {{ regions_page.number }} of {{ regions_page.paginator.num_pages }}</span>
+                    {% if regions_page.has_next %}
+                        <a href="?region_page={{ regions_page.next_page_number }}&airport_page={{ airports_page.number }}">Next</a>
+                    {% endif %}
+                </div>
             </td>
         </tr>
         
