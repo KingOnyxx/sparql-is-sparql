@@ -16,7 +16,7 @@
         <tr><th>Magnetic Variation (deg)</th><td>{{ navaid_data.magnetic_variation_deg }}</td></tr>
         <tr><th>Usage Type</th><td>{{ navaid_data.usageType }}</td></tr>
         <tr><th>Power</th><td>{{ navaid_data.power }}</td></tr>
-        <tr><th>Associated Airport</th><td><a href="{% url 'airport_details' airport_id=navaid_data.associated_airport %}" class="highlighted-cell">{{ navaid_data.associated_airport }}</a></td></tr>
+        <tr><th>Associated Airport</th><td><a href="{% url 'airport_details' airport_id=navaid_data.associated_airport %}" class="highlighted-cell">{{ navaid_data.airport_label }}</a></td></tr>
     </table>
 </div>
 {% endblock %}

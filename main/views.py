@@ -1,9 +1,12 @@
 from django.shortcuts import render
-from rdflib import Graph, URIRef, Literal, Namespace
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries
 from .country_queries import get_flag, cotw_queries
 from .navaid_queries import navaid_queries
+from .runway_queries import runway_queries
+from .search_queries import search_queries
+from .region_queries import region_queries
+from django.shortcuts import render
 
 # punya joel
 # SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
@@ -12,27 +15,33 @@ from .navaid_queries import navaid_queries
 SPARQL = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
-# Create your views here.
+def results_view(request):
+    query = request.GET.get('query', '')
+    result = search_queries(query, SPARQL)
+    print(result)
+    # Get data for airports and labels
+    results_data = {
+        'airports': [airport[27:] for airport in result.get("airports", [])],
+        'airport_labels': [label for label in result.get("airport_labels", [])]
+    }
 
-def home(request):
-    return render(request, 'index.html')
-
-
-def search(request):
-    if request.method == "GET":
-        # search = request.GET.get('search')
-        # print(search)
-        query = ""
-    return True
+    # Pair the airport names with their labels
+    paired_airports = zip(results_data['airports'], results_data['airport_labels'])
+    # print(results_data['airports'])
+    # print(results_data['airport_labels'])
     
 
+    return render(request, 'results_page.html', {
+        'results_data': results_data,
+        'paired_airports': paired_airports,
+        'page': {'title': 'Search Results'}
+    })
 
 
-from django.shortcuts import render
 
 
 
-from django.shortcuts import render
+
 
 # View for Airport Details
 def airport_view(request, airport_id):
@@ -94,7 +103,8 @@ def navaid_view(request, navaid_id):
     'usageType': result.get("usage_type", "")[27:],
     'power': result.get("power", "")[27:],
     'airport_id': result.get("airport_id", ""),
-    'associated_airport': result.get("airport", "")[27:]
+    'associated_airport': result.get("airport", "")[27:],
+    'airport_label': result.get("airport_label", "")
     }
 
     print(navaid_data["airport_id"])
@@ -102,17 +112,19 @@ def navaid_view(request, navaid_id):
 
 
 def runway_view(request, runway_id):
-    # Example data for a runway
+    result = runway_queries(runway_id, SPARQL)
+
     runway_data = {
-        'id': 'RW123',
-        'airport_ref': 'LAX',
-        'airport_ident': 'LAX Runway 1',
-        'length_ft': '12000',
-        'width_ft': '200',
-        'surface': 'Asphalt',
-        'lighted': 'Yes',
-        'closed': 'No',
-        'le_ident': 'RWY1'
+        'id': runway_id[7:],
+        'runway': result.get("runway", ""),
+        'airport': result.get("airport", "")[27:],
+        'airport_label': result.get("airport_label", ""),
+        'length_ft': result.get("length_ft", "")[:-3],
+        'width_ft': result.get("width_ft", "")[:-3],
+        'surface': result.get("surface", "")[27:],
+        'lighted': result.get("isLighted", ""),
+        'closed': result.get("isClosed", ""),
+        'le_ident': result.get("leID", "")
     }
     return render(request, 'runways_page.html', {'runway_data': runway_data, 'page': {'title': 'Runway Details'}})
 
@@ -121,6 +133,7 @@ def runway_view(request, runway_id):
 def country_view(request, iso_country):
     # Get the flag URL using the get_flag function
     flag_url = get_flag(iso_country, WIKIDATA_SPARQL)
+
 
     # Example data fetching (replace with actual SPARQL queries using cotw_queries)
     try:
@@ -202,14 +215,27 @@ def country_view(request, iso_country):
 
 
 def region_view(request, region_id):
-    # Example data for a region
+    results = region_queries(region_id, SPARQL)
+
+    print(results)
     region_data = {
-        'id': 'R123',
-        'code': 'R001',
-        'local_code': 'RC1',
-        'name': 'North America',
-        'continent': 'North America',
-        'iso_country': 'US',
-        'airports': 'Multiple Airports'
+        'id': results.get("region", "")[27:],
+        'code': results.get("hasID", "")[27:]   ,
+        'local_code': results.get("hasLocalCode", ""),
+        'name': results.get("label", ""),
+        # 'continent': results.get("continent", "")[27:],
+        'iso_country': results.get("country", "")[27:],
+        'country_label': results.get("labelCountry", "")
+        # 'airports': results.get("airports", [])
     }
+    # Example data for a region
+    # region_data = {
+    #     'id': 'R123',
+    #     'code': 'R001',
+    #     'local_code': 'RC1',
+    #     'name': 'North America',
+    #     'continent': 'North America',
+    #     'iso_country': 'US',
+    #     'airports': 'Multiple Airports'
+    # }
     return render(request, 'regions_page.html', {'region_data': region_data, 'page': {'title': 'Region Details'}})

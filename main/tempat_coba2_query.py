@@ -8,38 +8,27 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 sparql = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
 final_result=dict()
 # Set the SPARQL query
+id = "Dubai_Emirate"
+print(type(id))
 sparql.setQuery("""
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX c: <http://example.org/countries/>
-    PREFIX v: <http://myairports.com/data/>
-
-    SELECT DISTINCT * WHERE {{
-        ?country v:isPartOfRegion ?type .
-
-        OPTIONAL {{?country v:hasPopulation ?Population . }}
-        OPTIONAL {{?country v:hasAreaInSquareMiles ?AreaInSquareMiles . }}
-        OPTIONAL {{?country v:hasPopulationDensityPerSquareMiles ?PopulationDensityPerSquareMiles . }}
-        OPTIONAL {{?country v:hasCoastlineRatio ?CoastlineRatio . }}
-        OPTIONAL {{?country v:hasNetMigration ?NetMigration . }}
-        OPTIONAL {{?country v:hasInfantMortality ?InfantMortality . }}
-        OPTIONAL {{?country v:hasGDPInUSD ?GDPInUSD . }}
-        OPTIONAL {{?country v:hasLiteracyRate ?hasLiteracyRate . }}
-        OPTIONAL {{?country v:hasPhones ?hasPhones . }}
-        OPTIONAL {{?country v:arablePercentage ?arablePercentage . }}
-        OPTIONAL {{?country v:cropsPercentage ?cropsPercentage . }}
-        OPTIONAL {{?country v:othersPercentage ?othersPercentage . }}
-        OPTIONAL {{?country v:hasClimate ?hasClimate . }}
-        OPTIONAL {{?country v:hasBirthrate ?hasBirthrate . }}
-        OPTIONAL {{?country v:hasDeathrate ?hasDeathrate . }}
-        OPTIONAL {{?country v:hasAgricultureRatio ?hasAgricultureRatio . }}
-        OPTIONAL {{?country v:hasIndustryRatio ?hasIndustryRatio . }}
-        OPTIONAL {{?country v:hasServiceRatio ?hasServiceRatio . }}
-        OPTIONAL {{?country v:label ?label . }}
-
-        FILTER(?country = c:Afghanistan).
-                }}
-
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX v: <http://myairports.com/vocab#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX : <http://myairports.com/data/>
+                
+SELECT ?region ?label ?hasID ?hasLocalCode ?partOf
+WHERE {
+    ?region rdf:type :region .
+    OPTIONAL { ?region rdfs:label ?label . }
+    OPTIONAL { ?region v:hasID ?hasID . }
+    OPTIONAL { ?region v:hasLocalCode ?hasLocalCode . }
+    OPTIONAL { ?region v:partOf ?partOf . }
+    FILTER(?label = \"""" + id + """\")
+}
+LIMIT 100
 """)
+
 
 # Set the output format to JSON
 sparql.setReturnFormat(JSON)
