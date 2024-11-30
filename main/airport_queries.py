@@ -84,8 +84,6 @@ select distinct * where {
     # Execute the query
     results = sparql.query().convert()
 
-    if (len(results["results"]["bindings"]) == 0):
-        raise ValueError
 
     runways = []
     runway_labels = []

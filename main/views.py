@@ -5,31 +5,38 @@ from .airport_queries import airport_queries
 from .country_queries import get_flag
 from .navaid_queries import navaid_queries
 from .runway_queries import runway_queries
+from .search_queries import search_queries
+from django.shortcuts import render
 
 SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
-# Create your views here.
+def results_view(request):
+    query = request.GET.get('query', '')
+    result = search_queries(query, SPARQL)
+    print(result)
+    # Get data for airports and labels
+    results_data = {
+        'airports': [airport[27:] for airport in result.get("airports", [])],
+        'airport_labels': [label for label in result.get("airport_labels", [])]
+    }
 
-def home(request):
-    return render(request, 'index.html')
+    # Pair the airport names with their labels
+    paired_airports = zip(results_data['airports'], results_data['airport_labels'])
+    print(results_data['airports'])
+    print(results_data['airport_labels'])
 
-
-def search(request):
-    if request.method == "GET":
-        # search = request.GET.get('search')
-        # print(search)
-        query = ""
-    return True
-    
-
-
-
-from django.shortcuts import render
+    return render(request, 'results_page.html', {
+        'results_data': results_data,
+        'paired_airports': paired_airports,
+        'page': {'title': 'Search Results'}
+    })
 
 
 
-from django.shortcuts import render
+
+
+
 
 # View for Airport Details
 def airport_view(request, airport_id):

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Search Results</h2>
+        <p>You searched for: <strong>{{ query }}</strong></p>
+
+        {% if paired_airports %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Airport</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for airport, label in paired_airports %}
+                        <tr>
+                            <th><a href="{% url 'airport_details' airport_id=airport %}" class="highlighted-cell">{{ label }}</a></th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No results found for "{{ query }}".</p>
+        {% endif %}
+    </div>
+{% endblock %}
