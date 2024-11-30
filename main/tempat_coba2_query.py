@@ -1,40 +1,30 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 # GraphDB SPARQL endpoint
-sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+sparql = SPARQLWrapper("http://localhost:7200/repositories/airports")
 final_result=dict()
 # Set the SPARQL query
+id = "Dubai_Emirate"
+print(type(id))
 sparql.setQuery("""
-PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX v: <http://myairports.com/vocab#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX c: <http://example.org/countries/> 
-PREFIX : <http://myairports.com/data/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-select * where {
-?navaid rdf:type :navaid.
-optional{?navaid rdfs:label ?name.}
-optional{?navaid rdf:type ?type.}
-optional{?navaid v:ident ?ident.}
-optional{?navaid v:usage_type ?usage_type.}
-optional{?navaid v:power_type ?power.}
-optional{?navaid v:icao_code ?airport_id.
-        ?airport rdf:type :airport;
-                    v:ident ?airport_id.}
-optional{?navaid v:magnetic_var ?magnetic_variation_deg.}
-optional{?navaid v:country ?iso_country.}
-optional{?navaid geo:long ?longitude_deg.}
-optional{?navaid geo:alt ?elevation_ft.}
-optional{?navaid geo:lat ?latitude_deg.}
-optional{?navaid v:frequency ?frequency_khz.}
+PREFIX : <http://myairports.com/data/>
                 
-FILTER(?navaid = :""" + "95303" + """ && ?type != :navaid)
-} limit 100
-
-
+SELECT ?region ?label ?hasID ?hasLocalCode ?partOf
+WHERE {
+    ?region rdf:type :region .
+    OPTIONAL { ?region rdfs:label ?label . }
+    OPTIONAL { ?region v:hasID ?hasID . }
+    OPTIONAL { ?region v:hasLocalCode ?hasLocalCode . }
+    OPTIONAL { ?region v:partOf ?partOf . }
+    FILTER(?label = \"""" + id + """\")
+}
+LIMIT 100
 """)
+
 
 # Set the output format to JSON
 sparql.setReturnFormat(JSON)

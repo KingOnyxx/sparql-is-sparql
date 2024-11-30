@@ -1,14 +1,14 @@
 from django.shortcuts import render
-from rdflib import Graph, URIRef, Literal, Namespace
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries
 from .country_queries import get_flag
 from .navaid_queries import navaid_queries
 from .runway_queries import runway_queries
 from .search_queries import search_queries
+from .region_queries import region_queries
 from django.shortcuts import render
 
-SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 def results_view(request):
@@ -23,8 +23,12 @@ def results_view(request):
 
     # Pair the airport names with their labels
     paired_airports = zip(results_data['airports'], results_data['airport_labels'])
-    print(results_data['airports'])
-    print(results_data['airport_labels'])
+    # print(results_data['airports'])
+    # print(results_data['airport_labels'])
+
+    # Get data for regions
+    regions_result = region_queries(query, SPARQL)
+    
 
     return render(request, 'results_page.html', {
         'results_data': results_data,
@@ -127,6 +131,7 @@ def runway_view(request, runway_id):
 
 def country_view(request, iso_country):
     flag_url = get_flag(iso_country, WIKIDATA_SPARQL)
+
     
     # Example data for a country
     country_data = {
@@ -165,6 +170,10 @@ def country_view(request, iso_country):
 
 
 def region_view(request, region_id):
+    results = region_queries(region_id, SPARQL)
+
+    print(results)
+
     # Example data for a region
     region_data = {
         'id': 'R123',

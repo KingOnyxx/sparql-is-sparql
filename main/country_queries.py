@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import requests
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 def get_flag(iso_country, wikidata_sparql):
     # Define the SPARQL endpoint for Wikidata
@@ -28,4 +29,46 @@ def get_flag(iso_country, wikidata_sparql):
         flag_url = None
 
     return flag_url
+
+
+def runway_queries(id, sparql):
+    print(type(id))
+    print(id)
+    final_result = dict()
+
+    # Set the SPARQL query
+    sparql.setQuery("""
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX v: <http://myairports.com/vocab#>
+
+    SELECT ?country ?label ?hasID ?partOf
+    WHERE {
+        ?country a v:country .
+            OPTIONAL{ ?country rdfs:label ?label .}
+            OPTIONAL{ ?country v:hasID ?hasID .}    
+            OPTIONAL{ ?country v:partOf ?partOf .}
+            FILTER()
+            FILTER(?country = :""" + id + """ )
+    }
+    """)
+
+    # Set the output format to JSON
+    sparql.setReturnFormat(JSON)
+
+    # Execute the query
+    results = sparql.query().convert()
+
+    print(type(results))
+
+
+    if (len(results["results"]["bindings"]) == 0):
+        raise ValueError
+
+    result = results["results"]["bindings"][0]
+
+    for key in result.keys():
+        final_result[key] = result[key]["value"]
     
+    return(final_result)
