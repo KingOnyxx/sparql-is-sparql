@@ -24,7 +24,8 @@ select * where {
     optional{?navaid v:power_type ?power.}
         optional{?navaid v:icao_code ?airport_id.
         	?airport rdf:type :airport;
-            		 v:ident ?airport_id.}
+            		 v:ident ?airport_id;
+                     rdfs:label ?airport_label.}
     optional{?navaid v:magnetic_var ?magnetic_variation_deg.}
     optional{?navaid v:country ?iso_country.}
     optional{?navaid geo:long ?longitude_deg.}

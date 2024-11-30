@@ -15,14 +15,15 @@ PREFIX : <http://myairports.com/data/>
 SELECT * WHERE {
     ?runway rdf:type :Runway;
     OPTIONAL{?runway rdfs:label ?label}
-    OPTIONAL{?runway v:partOf ?airport}
-    OPTIONAL{?runway v:length ?length}
-    OPTIONAL{?runway v:width ?width}
+    OPTIONAL{?runway v:partOf ?airport .
+    ?airport rdfs:label ?airport_label}
+    OPTIONAL{?runway v:length ?length_ft}
+    OPTIONAL{?runway v:width ?width_ft}
     OPTIONAL{?runway v:surface ?surface}
     OPTIONAL{?runway v:isLighted ?isLighted}
     OPTIONAL{?runway v:isClosed ?isClosed}
     OPTIONAL{?runway v:leID ?leID}
-    FILTER(?runway = :""" + id + """Runway_238866)
+    FILTER(?runway = :""" + id + """ )
 } limit 100
     """)
 

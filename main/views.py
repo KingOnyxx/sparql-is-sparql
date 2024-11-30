@@ -4,6 +4,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries
 from .country_queries import get_flag
 from .navaid_queries import navaid_queries
+from .runway_queries import runway_queries
 
 SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
@@ -90,7 +91,8 @@ def navaid_view(request, navaid_id):
     'usageType': result.get("usage_type", "")[27:],
     'power': result.get("power", "")[27:],
     'airport_id': result.get("airport_id", ""),
-    'associated_airport': result.get("airport", "")[27:]
+    'associated_airport': result.get("airport", "")[27:],
+    'airport_label': result.get("airport_label", "")
     }
 
     print(navaid_data["airport_id"])
@@ -98,17 +100,19 @@ def navaid_view(request, navaid_id):
 
 
 def runway_view(request, runway_id):
-    # Example data for a runway
+    result = runway_queries(runway_id, SPARQL)
+
     runway_data = {
-        'id': 'RW123',
-        'airport_ref': 'LAX',
-        'airport_ident': 'LAX Runway 1',
-        'length_ft': '12000',
-        'width_ft': '200',
-        'surface': 'Asphalt',
-        'lighted': 'Yes',
-        'closed': 'No',
-        'le_ident': 'RWY1'
+        'id': runway_id[7:],
+        'runway': result.get("runway", ""),
+        'airport': result.get("airport", "")[27:],
+        'airport_label': result.get("airport_label", ""),
+        'length_ft': result.get("length_ft", "")[:-3],
+        'width_ft': result.get("width_ft", "")[:-3],
+        'surface': result.get("surface", "")[27:],
+        'lighted': result.get("isLighted", ""),
+        'closed': result.get("isClosed", ""),
+        'le_ident': result.get("leID", "")
     }
     return render(request, 'runways_page.html', {'runway_data': runway_data, 'page': {'title': 'Runway Details'}})
 
