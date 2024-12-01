@@ -6,28 +6,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title }}</title>
-    <!-- Bootstrap CDN for styling -->
+    
+    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Custom styles for Wikipedia-like appearance -->
+    <!-- FontAwesome for icons -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script> 
-    
 
     <style>
-        /* Custom style for search bar */
-        .navbar .search-bar {
-            width: 50%; /* Make the search bar take up half the screen width */
-            margin: 0 auto; /* Center the search bar */
+        /* Navbar Styling */
+        .navbar {
+            background-color: #f8f9fa;
         }
-        .search-box{
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .navbar-nav .nav-link {
+            font-size: 16px;
+            padding: 8px 15px;
+        }
+
+        /* Search Box Styling */
+        .search-box {
             width: fit-content;
             height: fit-content;
             position: relative;
             margin: 0 auto;
         }
-        .input-search{
+        .input-search {
             height: 50px;
             width: 50px;
             border-style: none;
@@ -36,18 +45,18 @@
             letter-spacing: 2px;
             outline: none;
             border-radius: 25px;
-            transition: all .5s ease-in-out;
+            transition: all 0.5s ease-in-out;
             background-color: #ffffff;
             padding-right: 40px;
-            color:#000000;
+            color: #000000;
         }
-        .input-search::placeholder{
-            color:rgba(0, 0, 0, 0.8);
+        .input-search::placeholder {
+            color: rgba(0, 0, 0, 0.8);
             font-size: 18px;
             letter-spacing: 2px;
             font-weight: 100;
         }
-        .btn-search{
+        .btn-search {
             width: 50px; /* Increased width */
             height: 50px; /* Increased height */
             border-style: none;
@@ -58,80 +67,132 @@
             border-radius: 50%;
             position: absolute;
             right: 0px;
-            color:#000000 ;
-            background-color:transparent;
-            pointer-events: painted;  
+            color: #000000;
+            background-color: transparent;
         }
-        .btn-search:focus ~ .input-search{
+        .input-search:focus {
             width: 300px;
             border-radius: 0px;
             background-color: transparent;
-            border-bottom:1px solid rgba(255,255,255,.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
             transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
         }
-        .input-search:focus{
-            width: 300px;
-            border-radius: 0px;
-            background-color: transparent;
-            border-bottom:1px solid rgba(255,255,255,.5);
-            transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
-        }
-
-
-
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">MyWebsite</a>
+            <a class="navbar-brand" href="#">Airpedia</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Home</a>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+
+                    <!-- Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
+                        <div class="dropdown-menu p-3" aria-labelledby="dropdownMenu">
+                            <!-- Airports Section -->
+                            <div class="dropdown-item-group">
+                                <a href="{% url 'all_airports' %}" class="dropdown-item">
+                                    <i class="fa fa-plane text-primary"></i> Airports
+                                </a>
+                            </div>
+                            <div class="dropdown-divider"></div>
+
+                            <!-- Countries Section -->
+                            <div class="dropdown-item-group">
+                                <a href="{% url 'all_countries' %}" class="dropdown-item">
+                                    <i class="fa fa-flag text-success"></i> Countries
+                                </a>
+                            </div>
+
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <!-- Add more links as needed -->
+
                 </ul>
 
-                <!-- Search Bar inside the navbar with input-group -->
-                <form class="form-inline search-bar" action="{% url 'results_view' %}" method="get">
-
+                <!-- Search Bar -->
+                <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
                     <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                        <button class="btn-search"><i class="fa fa-search"></i></button>
-                        <input type="text" class="input-search" placeholder="Type to Search...">
-                    </div>
-                    </div>
+                        <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                        <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
                     </div>
                 </form>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid">
+    <!-- Main Content Area -->
+    <div class="container mt-4">
         <div class="row">
             {% block content %}
-                <!-- Content will go here -->
+                <!-- Page-specific content will be inserted here -->
             {% endblock %}
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer bg-light text-center py-3 mt-5">
+    <footer class="footer text-center py-3">
         <div class="container">
-            <span class="text-muted">Content provided for educational purposes. Powered by Django & Bootstrap.</span>
+            <span>Powered by Django & Bootstrap | Airpedia</span>
         </div>
     </footer>
 
-    <!-- Bootstrap JS and dependencies -->
+    <!-- Scripts -->
+    <script>
+        let isExpanded = false; // Track if the search bar is expanded
+    
+        function handleSearchClick() {
+            const searchInput = document.getElementById('searchInput');
+            
+            if (!isExpanded) {
+                // If the search bar is not expanded, expand it
+                expandSearch();
+            } else {
+                // If the search bar is expanded, submit the form if the input has text
+                if (searchInput.value.trim() !== "") {
+                    // Submit the form with the search query
+                    document.getElementById('searchForm').submit();
+                } else {
+                    // If the input is empty, show an alert or handle the case as needed
+                    alert('Please enter a search term before submitting.');
+                }
+            }
+        }
+    
+        function expandSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            // Expand the search input field
+            searchInput.focus();
+            searchInput.style.width = '300px';
+            searchInput.style.transition = 'all 0.5s ease-in-out';
+            isExpanded = true;
+        }
+    
+        // Minimize search bar when clicking outside
+        document.addEventListener('click', (event) => {
+            const searchBox = document.querySelector('.search-box');
+            const searchInput = document.getElementById('searchInput');
+    
+            // Check if the click is outside the search box
+            if (!searchBox.contains(event.target)) {
+                // Minimize the search bar
+                searchInput.style.width = '50px';
+                searchInput.style.transition = 'all 0.5s ease-in-out';
+                isExpanded = false;
+            }
+        });
+    </script>
+    
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+</body>
 </html>

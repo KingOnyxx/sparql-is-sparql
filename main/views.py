@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from SPARQLWrapper import SPARQLWrapper, JSON
-from .airport_queries import airport_queries
-from .country_queries import get_flag, cotw_queries
+from .airport_queries import airport_queries, get_all_airports
+from .country_queries import get_all_countries, get_flag, cotw_queries
 from .navaid_queries import navaid_queries
 from .runway_queries import runway_queries
 from .search_queries import search_queries
@@ -9,12 +9,6 @@ from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
-# punya joel
-# SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
-
-# punya adrial
-# SPARQL = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
-# punya Laras
 SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
@@ -30,15 +24,18 @@ def results_view(request):
         'region_labels': [label.replace("_"," ") for label in result.get("region_labels", [])],
         'navaids': [navaid[27:] for navaid in result.get("navaids", [])],  
         'navaid_labels': [label for label in result.get("navaid_labels", [])],
-        # 'runways': [runway[27:] for runway in result.get("runways", [])],  
-        # 'runway_labels': [label for label in result.get("runway_labels", [])],
+        'runways': [runway[27:] for runway in result.get("runways", [])],  
+        'runway_labels': [label for label in result.get("runway_labels", [])],
+        'countries': [country[27:] for country in result.get("countries", [])],  
+        'country_labels': [label for label in result.get("country_labels", [])],
     }
 
     # Pair the airport names with their labels
     paired_airports = zip(results_data['airports'], results_data['airport_labels'])
     paired_regions = zip(results_data['regions'], results_data['region_labels'])
     paired_navaids = zip(results_data['navaids'], results_data['navaid_labels'])
-    # paired_runways = zip(results_data['runways'], results_data['runway_labels'])
+    paired_runways = zip(results_data['runways'], results_data['runway_labels'])
+    paired_countries = zip(results_data['countries'], results_data['country_labels'])
     # print(results_data['airports'])
     # print(results_data['airport_labels'])
     
@@ -48,7 +45,8 @@ def results_view(request):
         'paired_airports': paired_airports,
         'paired_regions': paired_regions,
         'paired_navaids': paired_navaids,
-        # 'paired_runways': paired_runways,
+        'paired_runways': paired_runways,
+        'paired_countries': paired_countries,
         'page': {'title': 'Search Results'}
     }) 
 
@@ -244,3 +242,62 @@ def region_view(request, region_id):
         'country_label': results.get("labelCountry", "")
     }
     return render(request, 'regions_page.html', {'region_data': region_data, 'page': {'title': 'Region Details'}})
+
+
+def all_airports(request):
+    result = get_all_airports(SPARQL)
+
+    airports = {
+        'airports_ids': result.get("airports_ids", ""),
+        'airports_labels': result.get("airports_labels", ""),
+    }
+
+    airport_data = [
+        {"label": label, "id": airport.split("/")[-1]}
+        for label, airport in zip(airports['airports_labels'], airports['airports_ids'])
+    ]
+    unique_airports = list({f"{item['label']}_{item['id']}": item for item in airport_data}.values())
+
+
+    # Paginate airports
+    airport_page_number = request.GET.get("airport_page", 1)
+    airport_paginator = Paginator(unique_airports, 10)
+    airports_page = airport_paginator.get_page(airport_page_number)
+
+    return render(
+        request,
+        'all_airports.html',
+        {
+            'airports_page': airports_page,
+        }
+    )
+
+
+def all_countries(request):
+
+    result = get_all_countries(SPARQL)
+
+    countries = {
+        'countries_code': result.get("countries_code", ""),
+        'countries_labels': result.get("countries_labels", ""),
+    }
+
+    country_data = [
+        {"label": label, "code": code.split("/")[-1]}
+        for label, code in zip(countries['countries_labels'], countries['countries_code'])
+    ]
+    unique_country = list({f"{item['label']}_{item['code']}": item for item in country_data}.values())
+
+
+    # Paginate airports
+    country_page_number = request.GET.get("country_page", 1)
+    country_paginator = Paginator(unique_country, 10)
+    country_page = country_paginator.get_page(country_page_number)
+
+    return render(
+        request,
+        'all_countries.html',
+        {
+            'country_page': country_page,
+        }
+    )

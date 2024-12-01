@@ -69,11 +69,38 @@
                         <th>Runway</th>
                     </tr>
                 </thead>
+                <tbody>
+                    {% for runway, label in paired_runways %}
+                        <tr>
+                            <th>
+                                <a href="{% url 'runway_details' runway_id=runway %}" class="highlighted-cell">{{ label }}</a>
+                            </th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        {% if paired_countries %}
+            <h3>Countries</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Country</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for country, label in paired_countries %}
+                        <tr>
+                            <th>
+                                <a href="{% url 'country_details' iso_country=country %}" class="highlighted-cell">{{ label }}</a>
+                            </th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         {% endif %}
 
-
-        {% if not paired_airports and not paired_regions and not paired_navaids %}
+        {% if not paired_airports and not paired_regions and not paired_navaids and not paired_runways and not paired_countries %}
             <p>No results found for "{{ query }}".</p>
         {% endif %}
     </div>

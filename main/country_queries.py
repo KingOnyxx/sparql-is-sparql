@@ -208,3 +208,42 @@ def country_queries(id, sparql):
         final_result[key] = result[key]["value"]
     
     return(final_result)
+
+
+def get_all_countries(sparql):
+    final_result = dict()
+
+    sparql.setQuery("""
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX c: <http://example.org/countries/>
+    PREFIX v: <http://myairports.com/data/>
+    PREFIX va: <http://myairports.com/vocab#>
+
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT DISTINCT * WHERE {
+                   
+    ?code rdfs:label ?countryLabel .
+    ?code va:partOf ?continentCode . 
+    ?code rdf:type va:country.
+    filter(isIRI(?continentCode)).
+        
+    }
+    """)
+
+    # Set the output format to JSON
+    sparql.setReturnFormat(JSON)
+
+    # Execute the query
+    results = sparql.query().convert()
+
+    countries_code = []
+    countries_labels = []
+
+    for result in results["results"]["bindings"]:
+        countries_code.append(result["code"]["value"])
+        countries_labels.append(result["countryLabel"]["value"])
+
+    final_result["countries_code"] = countries_code
+    final_result["countries_labels"] = countries_labels
+
+    return final_result

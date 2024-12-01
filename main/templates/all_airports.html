@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Airports</h2>
+
+
+    <!-- Country Data Table -->
+    <table class="table">
+        <!-- For Airports -->
+        <tr>
+            <th>
+                <ul>
+                    {% for airport in airports_page %}
+                        <li>
+                            <a href="{% url 'airport_details' airport_id=airport.id %}" class="highlighted-cell">
+                                {{ airport.label }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="pagination">
+                    {% if airports_page.has_previous %}
+                        <a href="?airport_page={{ airports_page.previous_page_number }}&region_page={{ regions_page.number }}">Previous</a>
+                    {% endif %}
+                    <span>Page {{ airports_page.number }} of {{ airports_page.paginator.num_pages }}</span>
+                    {% if airports_page.has_next %}
+                        <a href="?airport_page={{ airports_page.next_page_number }}&region_page={{ regions_page.number }}">Next</a>
+                    {% endif %}
+                </div>
+            </th>
+        </tr>
+        
+        
+        
+    </table>
+</div>
+{% endblock %}

@@ -2,10 +2,10 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 # GraphDB SPARQL endpoint
 # punya joel
-# sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 
 # punya adrial
-sparql = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
+# sparql = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
 final_result=dict()
 # Set the SPARQL query
 id = "Dubai_Emirate"

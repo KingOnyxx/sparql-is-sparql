@@ -35,6 +35,12 @@ SELECT * WHERE {{
                 rdfs:label ?runway_label .
         FILTER(CONTAINS(LCASE(?runway_label), "''' + id + '''"))
     }
+    UNION
+    {
+        ?country rdf:type :country;
+                rdfs:label ?country_label .
+        FILTER(CONTAINS(LCASE(?country_label), "''' + id + '''"))
+    }
 }}
     ''')
 
@@ -56,8 +62,10 @@ SELECT * WHERE {{
     region_labels = []
     navaids = []
     navaid_labels = []
-    # runways =[]
-    # runway_labels = []
+    runways =[]
+    runway_labels = []
+    countries = []
+    country_labels = []
 
     # Process each result row
     for result in results["results"]["bindings"]:
@@ -70,9 +78,12 @@ SELECT * WHERE {{
         if "navaid" in result:
             navaids.append(result["navaid"]["value"])
             navaid_labels.append(result["navaid_label"]["value"])
-        # if "runway" in result:
-        #     runways.append(result["runway"]["value"])
-        #     runway_labels.append(result["runway_label"]["value"])
+        if "runway" in result:
+            runways.append(result["runway"]["value"])
+            runway_labels.append(result["runway_label"]["value"])
+        if "country" in result:
+            countries.append(result["country"]["value"])
+            country_labels.append(result["country_label"]["value"])
 
     # Populate the final result dictionary
     final_result["airports"] = airports
@@ -81,7 +92,9 @@ SELECT * WHERE {{
     final_result["region_labels"] = region_labels
     final_result["navaids"] = navaids
     final_result["navaid_labels"] = navaid_labels
-    # final_result["runways"] = runways
-    # final_result["runway_labels"] = runway_labels
+    final_result["runways"] = runways
+    final_result["runway_labels"] = runway_labels
+    final_result["countries"] = countries
+    final_result["country_labels"] = country_labels
 
     return final_result

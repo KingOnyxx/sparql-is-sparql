@@ -132,6 +132,42 @@ select distinct * where {
     return final_result
 
 
+def get_all_airports(sparql):
+    final_result = dict()
+
+    # Set the SPARQL query
+    sparql.setQuery("""
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX c: <http://example.org/countries/>
+
+        PREFIX v: <http://myairports.com/data/>
+        PREFIX va: <http://myairports.com/vocab#>
+
+        select distinct * where {
+            ?airportId rdfs:label ?airport .
+            ?airportId va:country ?country1 .
+        } 
+        """               
+    )
+    
+    sparql.setReturnFormat(JSON)
+
+    # Execute the query
+    results = sparql.query().convert()
+
+    airports_ids = []
+    airports_labels = []
+
+    for result in results["results"]["bindings"]:
+        airports_ids.append(result["airportId"]["value"])
+        airports_labels.append(result["airport"]["value"])
+
+    final_result["airports_ids"] = airports_ids
+    final_result["airports_labels"] = airports_labels
+
+    return final_result
+
 
 
 
