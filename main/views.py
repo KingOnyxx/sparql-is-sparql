@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from SPARQLWrapper import SPARQLWrapper, JSON
-from .airport_queries import airport_queries
+from .airport_queries import airport_queries, get_all_airports
 from .country_queries import get_flag, cotw_queries
 from .navaid_queries import navaid_queries
 from .runway_queries import runway_queries
@@ -245,3 +245,32 @@ def region_view(request, region_id):
         'country_label': results.get("labelCountry", "")
     }
     return render(request, 'regions_page.html', {'region_data': region_data, 'page': {'title': 'Region Details'}})
+
+
+def all_airports(request):
+    result = get_all_airports(SPARQL)
+
+    airports = {
+        'airports_ids': result.get("airports_ids", ""),
+        'airports_labels': result.get("airports_labels", ""),
+    }
+
+    airport_data = [
+        {"label": label, "id": airport.split("/")[-1]}
+        for label, airport in zip(airports['airports_labels'], airports['airports_ids'])
+    ]
+    unique_airports = list({f"{item['label']}_{item['id']}": item for item in airport_data}.values())
+
+
+    # Paginate airports
+    airport_page_number = request.GET.get("airport_page", 1)
+    airport_paginator = Paginator(unique_airports, 10)
+    airports_page = airport_paginator.get_page(airport_page_number)
+
+    return render(
+        request,
+        'all_airports.html',
+        {
+            'airports_page': airports_page,
+        }
+    )

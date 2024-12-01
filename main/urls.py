@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import results_view, airport_view, country_view, navaid_view, region_view, runway_view
+from .views import results_view, airport_view, country_view, navaid_view, region_view, runway_view, all_airports
 
 
 urlpatterns = [
@@ -9,4 +9,7 @@ urlpatterns = [
     path('navaids/<str:navaid_id>/', navaid_view, name='navaid_details'),
     path('regions/<str:region_id>/', region_view, name='region_details'),
     path('runways/<str:runway_id>/', runway_view, name='runway_details'),
+
+    
+    path('airports/', all_airports, name='all_airports'),
 ]

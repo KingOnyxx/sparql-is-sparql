@@ -91,14 +91,36 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+
+                    <!-- Dropdown Menu -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenu">
-                            <a class="dropdown-item" href="#">Airports</a>
-                            <a class="dropdown-item" href="#">Countries</a>
-                            <a class="dropdown-item" href="#">Regions</a>
+                        <div class="dropdown-menu p-3" aria-labelledby="dropdownMenu">
+                            <!-- Airports Section -->
+                            <div class="dropdown-item-group">
+                                <a href="{% url 'all_airports' %}" class="dropdown-item">
+                                    <i class="fa fa-plane text-primary"></i> Airports
+                                </a>
+                            </div>
+                            <div class="dropdown-divider"></div>
+
+                            <!-- Countries Section -->
+                            <div class="dropdown-item-group">
+                                <a href="#" class="dropdown-item">
+                                    <i class="fa fa-flag text-success"></i> Countries
+                                </a>
+                            </div>
+                            <div class="dropdown-divider"></div>
+
+                            <!-- Regions Section -->
+                            <div class="dropdown-item-group">
+                                <a href="#" class="dropdown-item">
+                                    <i class="fa fa-map text-warning"></i> Regions
+                                </a>
+                            </div>
                         </div>
                     </li>
+
                 </ul>
 
                 <!-- Search Bar -->
