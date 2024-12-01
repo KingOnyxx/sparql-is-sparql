@@ -70,6 +70,7 @@ def cotw_queries(country_code, sparql):
 
         FILTER(?code = v:{country_code}).
         FILTER(?label = (CONCAT(?countryLabel2, " "))).
+        FILTER(isLITERAL(?continentCode)).
     }}
     """)
 
@@ -105,11 +106,12 @@ def cotw_queries(country_code, sparql):
         
         ?country v:label ?countryLabel1 . 
         
-        FILTER(?code = v:{country_code}).
-        FILTER(?isoCountry = v:{country_code}).
+        FILTER(?code = v:AF).
+        FILTER(?isoCountry = v:AF).
         FILTER(?countryLabel1 = (CONCAT(?countryLabel2, " "))).
-            
-        }}
+        FILTER(isLITERAL(?continentCode)).
+    
+            }}
     """)
 
     sparql.setReturnFormat(JSON)

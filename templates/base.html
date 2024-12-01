@@ -83,33 +83,14 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Airpedia</a>
+            <a class="navbar-brand" href="#">WorldTraCe</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-
-                    <!-- Dropdown Menu -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
-                        <div class="dropdown-menu p-3" aria-labelledby="dropdownMenu">
-                            <!-- Airports Section -->
-                            <div class="dropdown-item-group">
-                                <a href="{% url 'all_airports' %}" class="dropdown-item">
-                                    <i class="fa fa-plane text-primary"></i> Airports
-                                </a>
-                            </div>
-                            <div class="dropdown-divider"></div>
-
-                            <!-- Countries Section -->
-                            <div class="dropdown-item-group">
-                                <a href="{% url 'all_countries' %}" class="dropdown-item">
-                                    <i class="fa fa-flag text-success"></i> Countries
-                                </a>
-                            </div>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'all_countries' %}">Countries</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'all_airports' %}">Airports</a></li>
 
                         </div>
                     </li>
