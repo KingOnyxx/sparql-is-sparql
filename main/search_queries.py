@@ -29,6 +29,12 @@ SELECT * WHERE {{
                 rdfs:label ?navaid_label .
         FILTER(CONTAINS(LCASE(?navaid_label), "''' + id + '''"))
     }
+    UNION
+    {
+        ?runway rdf:type :Runway;
+                rdfs:label ?runway_label .
+        FILTER(CONTAINS(LCASE(?runway_label), "''' + id + '''"))
+    }
 }}
     ''')
 

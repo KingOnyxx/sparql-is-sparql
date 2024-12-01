@@ -13,15 +13,15 @@ from django.core.paginator import Paginator
 # SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 
 # punya adrial
-SPARQL = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
+# SPARQL = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
 # punya Laras
-# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airport")
+SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 def results_view(request):
     query = request.GET.get('query', '')
     result = search_queries(query, SPARQL)
-    print(result)
+    # print(result)
     # Get data for airports and labels
     results_data = {
         'airports': [airport[27:] for airport in result.get("airports", [])],
@@ -61,7 +61,7 @@ def results_view(request):
 # View for Airport Details
 def airport_view(request, airport_id):
     result = airport_queries(airport_id, SPARQL)
-    print(result)
+    # print(result)
 
     # Example airport data (replace with actual data)
     airport_data = {
@@ -101,7 +101,7 @@ def airport_view(request, airport_id):
 
 def navaid_view(request, navaid_id):
     result = navaid_queries(navaid_id, SPARQL)
-    print(result)
+    # print(result)
     # Example data for a navaid
     
     navaid_data = {
@@ -122,7 +122,6 @@ def navaid_view(request, navaid_id):
     'airport_label': result.get("airport_label", "")
     }
 
-    print(navaid_data["airport_id"])
     return render(request, 'navaids_page.html', {'navaid_data': navaid_data, 'page': {'title': 'Navaid Details'}})
 
 
