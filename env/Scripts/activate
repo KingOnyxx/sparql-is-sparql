@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Kuliah\Semester 5\KG\TK\frontend\env"
+VIRTUAL_ENV="C:\Users\ASUSTeK\Documents\Fasilkom\SEM 5\KG\Proyek Akhir\TEKAAA\sparql-is-sparql\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -8,7 +8,8 @@ from .search_queries import search_queries
 from .region_queries import region_queries
 from django.shortcuts import render
 
-SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+# punya Laras
+# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airport")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 def results_view(request):
@@ -18,11 +19,20 @@ def results_view(request):
     # Get data for airports and labels
     results_data = {
         'airports': [airport[27:] for airport in result.get("airports", [])],
-        'airport_labels': [label for label in result.get("airport_labels", [])]
+        'airport_labels': [label for label in result.get("airport_labels", [])],
+        'regions': [region[27:] for region in result.get("regions", [])],  
+        'region_labels': [label.replace("_"," ") for label in result.get("region_labels", [])],
+        'navaids': [navaid[27:] for navaid in result.get("navaids", [])],  
+        'navaid_labels': [label for label in result.get("navaid_labels", [])],
+        # 'runways': [runway[27:] for runway in result.get("runways", [])],  
+        # 'runway_labels': [label for label in result.get("runway_labels", [])],
     }
 
     # Pair the airport names with their labels
     paired_airports = zip(results_data['airports'], results_data['airport_labels'])
+    paired_regions = zip(results_data['regions'], results_data['region_labels'])
+    paired_navaids = zip(results_data['navaids'], results_data['navaid_labels'])
+    # paired_runways = zip(results_data['runways'], results_data['runway_labels'])
     # print(results_data['airports'])
     # print(results_data['airport_labels'])
     
@@ -30,8 +40,11 @@ def results_view(request):
     return render(request, 'results_page.html', {
         'results_data': results_data,
         'paired_airports': paired_airports,
+        'paired_regions': paired_regions,
+        'paired_navaids': paired_navaids,
+        # 'paired_runways': paired_runways,
         'page': {'title': 'Search Results'}
-    })
+    }) 
 
 
 
@@ -174,20 +187,8 @@ def region_view(request, region_id):
         'id': results.get("region", "")[27:],
         'code': results.get("hasID", "")[27:]   ,
         'local_code': results.get("hasLocalCode", ""),
-        'name': results.get("label", ""),
-        # 'continent': results.get("continent", "")[27:],
+        'name': results.get("label", "").replace("_", " "),
         'iso_country': results.get("country", "")[27:],
         'country_label': results.get("labelCountry", "")
-        # 'airports': results.get("airports", [])
     }
-    # Example data for a region
-    # region_data = {
-    #     'id': 'R123',
-    #     'code': 'R001',
-    #     'local_code': 'RC1',
-    #     'name': 'North America',
-    #     'continent': 'North America',
-    #     'iso_country': 'US',
-    #     'airports': 'Multiple Airports'
-    # }
     return render(request, 'regions_page.html', {'region_data': region_data, 'page': {'title': 'Region Details'}})

@@ -20,7 +20,60 @@
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
+        {% endif %}
+
+        {% if paired_regions %}
+            <h3>Regions</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Region</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for region, label in paired_regions %}
+                        <tr>
+                            <th>
+                                <a href="{% url 'region_details' region_id=region %}" class="highlighted-cell">{{ label }}</a>
+                            </th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if paired_navaids %}
+            <h3>Navaids</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Navaid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for navaid, label in paired_navaids %}
+                        <tr>
+                            <th>
+                                <a href="{% url 'navaid_details' navaid_id=navaid %}" class="highlighted-cell">{{ label }}</a>
+                            </th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        {% if paired_runways %}
+            <h3>Runways</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Runway</th>
+                    </tr>
+                </thead>
+            </table>
+        {% endif %}
+
+
+        {% if not paired_airports and not paired_regions and not paired_navaids %}
             <p>No results found for "{{ query }}".</p>
         {% endif %}
     </div>
