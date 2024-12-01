@@ -117,10 +117,10 @@
                 </ul>
 
                 <!-- Search Bar -->
-                <form class="form-inline" onsubmit="return false;">
+                <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
                     <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                        <button class="btn-search" type="button" onclick="expandSearch()"><i class="fa fa-search"></i></button>
-                        <input type="text" class="input-search" placeholder="Type to Search..." id="searchInput">
+                        <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                        <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
                     </div>
                 </form>
             </div>
@@ -147,30 +147,40 @@
     <script>
         let isExpanded = false; // Track if the search bar is expanded
     
+        function handleSearchClick() {
+            const searchInput = document.getElementById('searchInput');
+            
+            if (!isExpanded) {
+                // If the search bar is not expanded, expand it
+                expandSearch();
+            } else {
+                // If the search bar is expanded, submit the form if the input has text
+                if (searchInput.value.trim() !== "") {
+                    // Submit the form with the search query
+                    document.getElementById('searchForm').submit();
+                } else {
+                    // If the input is empty, show an alert or handle the case as needed
+                    alert('Please enter a search term before submitting.');
+                }
+            }
+        }
+    
         function expandSearch() {
             const searchInput = document.getElementById('searchInput');
-            const searchBox = document.querySelector('.search-box');
-    
-            if (!isExpanded) {
-                // Expand the search bar
-                searchInput.focus();
-                searchInput.style.width = '300px';
-                searchInput.style.transition = 'all 0.5s ease-in-out';
-                isExpanded = true;
-            } else {
-                // Trigger the search (you can replace this with your actual search logic)
-                console.log('Searching:', searchInput.value);
-                isExpanded = false; // Reset expansion
-            }
+            
+            // Expand the search input field
+            searchInput.focus();
+            searchInput.style.width = '300px';
+            searchInput.style.transition = 'all 0.5s ease-in-out';
+            isExpanded = true;
         }
     
         // Minimize search bar when clicking outside
         document.addEventListener('click', (event) => {
             const searchBox = document.querySelector('.search-box');
             const searchInput = document.getElementById('searchInput');
-            const btnSearch = document.querySelector('.btn-search');
     
-            // Check if the click is outside the search box or button
+            // Check if the click is outside the search box
             if (!searchBox.contains(event.target)) {
                 // Minimize the search bar
                 searchInput.style.width = '50px';
@@ -179,6 +189,7 @@
             }
         });
     </script>
+    
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.0/dist/umd/popper.min.js"></script>
