@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .airport_queries import airport_queries, get_all_airports
-from .country_queries import get_flag, cotw_queries
+from .country_queries import get_all_countries, get_flag, cotw_queries
 from .navaid_queries import navaid_queries
 from .runway_queries import runway_queries
 from .search_queries import search_queries
@@ -9,13 +9,7 @@ from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
-# punya joel
-# SPARQL = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
-
-# punya adrial
-SPARQL = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
-# punya Laras
-# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airport")
+SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 def results_view(request):
@@ -272,5 +266,35 @@ def all_airports(request):
         'all_airports.html',
         {
             'airports_page': airports_page,
+        }
+    )
+
+
+def all_countries(request):
+
+    result = get_all_countries(SPARQL)
+
+    countries = {
+        'countries_code': result.get("countries_code", ""),
+        'countries_labels': result.get("countries_labels", ""),
+    }
+
+    country_data = [
+        {"label": label, "code": code.split("/")[-1]}
+        for label, code in zip(countries['countries_labels'], countries['countries_code'])
+    ]
+    unique_country = list({f"{item['label']}_{item['code']}": item for item in country_data}.values())
+
+
+    # Paginate airports
+    country_page_number = request.GET.get("country_page", 1)
+    country_paginator = Paginator(unique_country, 10)
+    country_page = country_paginator.get_page(country_page_number)
+
+    return render(
+        request,
+        'all_countries.html',
+        {
+            'country_page': country_page,
         }
     )
