@@ -133,40 +133,51 @@ select distinct * where {
 
 
 def get_all_airports(sparql):
-    final_result = dict()
+    """
+    Fetches all airports with their corresponding country names.
+
+    Args:
+        sparql: The SPARQLWrapper object for querying the dataset.
+
+    Returns:
+        A dictionary with:
+        - airports: A list of dictionaries containing airport details:
+            - id: Airport ID
+            - label: Airport name
+            - country: Country name
+    """
+    final_result = {"airports": []}
 
     # Set the SPARQL query
     sparql.setQuery("""
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX c: <http://example.org/countries/>
-
-        PREFIX v: <http://myairports.com/data/>
         PREFIX va: <http://myairports.com/vocab#>
 
-        select distinct * where {
+        SELECT DISTINCT ?airportId ?airport ?label1 WHERE {
             ?airportId rdfs:label ?airport .
-            ?airportId va:country ?country1 .
-        } 
-        """               
-    )
-    
+            ?airportId va:country ?isoCode .
+            ?isoCode rdfs:label ?label1 .
+        }
+    """)
+
     sparql.setReturnFormat(JSON)
 
     # Execute the query
     results = sparql.query().convert()
 
-    airports_ids = []
-    airports_labels = []
-
     for result in results["results"]["bindings"]:
-        airports_ids.append(result["airportId"]["value"])
-        airports_labels.append(result["airport"]["value"])
+        airport_id = result["airportId"]["value"]
+        airport_label = result["airport"]["value"]
+        country_name = result["label1"]["value"]
 
-    final_result["airports_ids"] = airports_ids
-    final_result["airports_labels"] = airports_labels
+        final_result["airports"].append({
+            "id": airport_id.split("/")[-1],  # Extract only the last part of the URI
+            "label": airport_label,
+            "country": country_name,
+        })
 
     return final_result
+
 
 
 

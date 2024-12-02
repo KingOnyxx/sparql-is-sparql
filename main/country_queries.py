@@ -106,8 +106,8 @@ def cotw_queries(country_code, sparql):
         
         ?country v:label ?countryLabel1 . 
         
-        FILTER(?code = v:AF).
-        FILTER(?isoCountry = v:AF).
+        FILTER(?code = v:{country_code}).
+        FILTER(?isoCountry = v:{country_code}).
         FILTER(?countryLabel1 = (CONCAT(?countryLabel2, " "))).
         FILTER(isLITERAL(?continentCode)).
     
@@ -225,11 +225,13 @@ def get_all_countries(sparql):
     SELECT DISTINCT * WHERE {
                    
     ?code rdfs:label ?countryLabel .
-    ?code va:partOf ?continentCode . 
     ?code rdf:type va:country.
-    filter(isIRI(?continentCode)).
+                    
+    ?country v:label ?CountryLabel2 . 
+    
+    filter(?CountryLabel2 = CONCAT(?countryLabel, " ")) .
         
-    }
+    } 
     """)
 
     # Set the output format to JSON

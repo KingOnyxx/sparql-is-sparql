@@ -247,21 +247,35 @@ def region_view(request, region_id):
 def all_airports(request):
     result = get_all_airports(SPARQL)
 
-    airports = {
-        'airports_ids': result.get("airports_ids", ""),
-        'airports_labels': result.get("airports_labels", ""),
-    }
+    # Retrieve airport data
+    airport_data = result.get("airports", [])
 
-    airport_data = [
-        {"label": label, "id": airport.split("/")[-1]}
-        for label, airport in zip(airports['airports_labels'], airports['airports_ids'])
-    ]
-    unique_airports = list({f"{item['label']}_{item['id']}": item for item in airport_data}.values())
+    # Get unique country names for filtering
+    countries = sorted({airport["country"] for airport in airport_data})
 
+    # Get filter and sort parameters
+    selected_country = request.GET.get("country", None)
+    sort_by = request.GET.get("sort", "default")  # Default to unsorted (original order)
 
-    # Paginate airports
+    # Filter by country
+    if selected_country:
+        airport_data = [airport for airport in airport_data if airport["country"] == selected_country]
+
+    # Apply sorting based on sort_by parameter
+    if sort_by == "label_asc":
+        airport_data.sort(key=lambda x: x["label"].lower())
+    elif sort_by == "label_desc":
+        airport_data.sort(key=lambda x: x["label"].lower(), reverse=True)
+    elif sort_by == "country_asc":
+        airport_data.sort(key=lambda x: x["country"].lower())
+    elif sort_by == "country_desc":
+        airport_data.sort(key=lambda x: x["country"].lower(), reverse=True)
+    # No sorting if sort_by == "default" or invalid
+
+    # Pagination
+    items_per_page = int(request.GET.get("items_per_page", 10))
     airport_page_number = request.GET.get("airport_page", 1)
-    airport_paginator = Paginator(unique_airports, 10)
+    airport_paginator = Paginator(airport_data, items_per_page)
     airports_page = airport_paginator.get_page(airport_page_number)
 
     return render(
@@ -269,8 +283,15 @@ def all_airports(request):
         'all_airports.html',
         {
             'airports_page': airports_page,
+            'items_per_page': items_per_page,
+            'countries': countries,
+            'selected_country': selected_country,
+            'sort_by': sort_by,  # Pass sort_by to the template
         }
     )
+
+
+
 
 
 def all_countries(request):
