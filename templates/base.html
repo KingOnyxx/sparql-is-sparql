@@ -89,8 +89,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'all_countries' %}">Countries</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'all_airports' %}">Airports</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'all_countries' %}?country_page=1&sort=default&items_per_page=10">
+                            Countries
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'all_airports' %}?airport_page=1&sort=default&items_per_page=10">
+                            Airports
+                        </a>
+                    </li>
+                    
 
                         </div>
                     </li>

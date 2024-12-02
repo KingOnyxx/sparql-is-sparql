@@ -292,27 +292,37 @@ def all_airports(request):
 
 
 
-
-
 def all_countries(request):
-
+    """
+    Retrieves all countries and implements pagination, sorting, and filtering.
+    """
     result = get_all_countries(SPARQL)
 
+    # Extract country data
     countries = {
-        'countries_code': result.get("countries_code", ""),
-        'countries_labels': result.get("countries_labels", ""),
+        'countries_code': result.get("countries_code", []),
+        'countries_labels': result.get("countries_labels", [])
     }
 
+    # Prepare country data
     country_data = [
-        {"label": label, "code": code.split("/")[-1]}
-        for label, code in zip(countries['countries_labels'], countries['countries_code'])
+        {"label": label, "code": code.split("/")[-1]}  # Extract ISO code
+        for label, code in zip(countries["countries_labels"], countries["countries_code"])
     ]
-    unique_country = list({f"{item['label']}_{item['code']}": item for item in country_data}.values())
 
+    # Get sorting parameters
+    sort_by = request.GET.get("sort", "default")  # Default to unsorted
 
-    # Paginate airports
+    # Apply sorting
+    if sort_by == "label_asc":
+        country_data.sort(key=lambda x: x["label"].lower())
+    elif sort_by == "label_desc":
+        country_data.sort(key=lambda x: x["label"].lower(), reverse=True)
+
+    # Pagination
+    items_per_page = int(request.GET.get("items_per_page", 10))
     country_page_number = request.GET.get("country_page", 1)
-    country_paginator = Paginator(unique_country, 10)
+    country_paginator = Paginator(country_data, items_per_page)
     country_page = country_paginator.get_page(country_page_number)
 
     return render(
@@ -320,5 +330,8 @@ def all_countries(request):
         'all_countries.html',
         {
             'country_page': country_page,
+            'items_per_page': items_per_page,
+            'sort_by': sort_by
         }
     )
+
