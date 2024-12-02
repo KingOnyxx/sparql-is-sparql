@@ -17,19 +17,14 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
 
     <style>
-        /* Navbar Styling */
-        .navbar {
-            background-color: #f8f9fa;
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-        .navbar-nav .nav-link {
-            font-size: 16px;
-            padding: 8px 15px;
-        }
 
-        /* Search Box Styling */
+        
+
+        
+
+
+
+        /* Search Box Styling (jangan pernah diganti) */
         .search-box {
             width: fit-content;
             height: fit-content;
@@ -46,12 +41,12 @@
             outline: none;
             border-radius: 25px;
             transition: all 0.5s ease-in-out;
-            background-color: #ffffff;
+            background-color: #1e1e1e;
             padding-right: 40px;
-            color: #000000;
+            color: rgba(255, 255, 255, 0.5);
         }
         .input-search::placeholder {
-            color: rgba(0, 0, 0, 0.8);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 18px;
             letter-spacing: 2px;
             font-weight: 100;
@@ -67,7 +62,7 @@
             border-radius: 50%;
             position: absolute;
             right: 0px;
-            color: #000000;
+            color: #a0a0a0;
             background-color: transparent;
         }
         .input-search:focus {
@@ -77,6 +72,430 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.5);
             transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
         }
+        /*  */
+        
+        /* Navbar Styling */
+        .navbar {
+            background-color: #1e1e1e; /* Dark gray */
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #e0e0e0 !important;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 16px;
+            padding: 8px 15px;
+            color: #e0e0e0 !important;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .navbar-nav .nav-link:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 0%;
+            background: #1e1e1e; /* Start with the background color */
+            transition: width 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover:after {
+            animation: underline-color 0.6s ease forwards; /* Trigger animation */
+            width: 100%; /* Expand the underline */
+        }
+
+        /* Keyframes for the color change */
+        @keyframes underline-color {
+            0% {
+                background: #1e1e1e; /* Original background */
+            }
+            50% {
+                background: #b3b3b3; /* Highlighted color */
+            }
+            100% {
+                background: #1e1e1e; /* Transition back to the original */
+            }
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #b3b3b3 !important; 
+        }
+
+        .navbar-nav .nav-link:hover:after {
+            width: 100%; /* Underline expands fully */
+        }
+
+        /* Body Styling */
+        body {
+            background-color: #1e1e1e; /* Dark gray */
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Floating Stack Styling */
+        .floating-stack {
+            background: #1e1e1e; /* Matches body color */
+            color: #e0e0e0;
+            height: 400px;
+            max-width: 100%;
+            border-radius: 10px;
+            overflow-y: auto;
+            padding: 1rem;
+            box-shadow: none; /* Removed shadow outline */
+            scrollbar-width: none; /* For Firefox */
+            -ms-overflow-style: none; /* For Internet Explorer */
+        }
+
+        .floating-stack::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Webkit-based browsers */
+        }
+
+        .floating-stack > dl {
+            margin: 0;
+            display: grid;
+            grid-template-columns: 2.5rem 1fr;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .floating-stack dt {
+            position: sticky;
+            top: 0.5rem;
+            left: 0.5rem;
+            font-weight: bold;
+            background: #333; /* Slightly darker gray */
+            color: #fff;
+            height: 2rem;
+            width: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-stack dd {
+            margin: 0;
+            padding: 0.75rem;
+            grid-column: 2;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Country Links Styling */
+        .floating-stack dd a {
+            color: rgba(255, 255, 255, 0.6); /* Light gray */
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Left-to-Right Underline Effect */
+        .floating-stack dd a:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 0%;
+            background: #f1c40f; /* Golden yellow underline */
+            transition: width 0.3s ease;
+        }
+
+        .floating-stack dd a:hover {
+            color: #f1c40f; /* Text turns golden yellow on hover */
+        }
+
+        .floating-stack dd a:hover:after {
+            width: 100%; /* Underline expands from left to right */
+        }
+
+        /* Filter Form Styling */
+        .form-inline label {
+            color: #e0e0e0; /* Matches the theme */
+        }
+
+        select.form-control {
+            background: #333; /* Matches dark theme */
+            color: #e0e0e0;
+            border: 1px solid #444;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        select.form-control:hover,
+        select.form-control:focus {
+            border-color: #f1c40f; /* Golden highlight */
+            background: #444;
+            color: #fff;
+        }
+
+
+
+
+    /* Styling for country text */
+    .country-text {
+        color: #e0e0e0; /* Neutral text color for country */
+        font-weight: normal; /* Distinctive styling */
+        text-decoration: none; /* No underline */
+        cursor: default; /* Prevent pointer cursor */
+    }
+
+    .country-text:hover {
+        color: #e0e0e0; /* Ensure no hover effect */
+    }
+
+    /* Styling for hover effect on airport links */
+    .link-hover-effect-airports {
+        color: #b3b3b3; /* Initial color */
+        text-decoration: none;
+        position: relative;
+        transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .link-hover-effect-airports:hover {
+        color: #f1c40f; /* Yellow color on hover */
+        text-decoration: none; /* Ensures no underline */
+    }
+
+    .link-hover-effect-airports:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #f1c40f; /* Yellow underline */
+        transition: width 0.3s ease;
+    }
+
+    .link-hover-effect-airports:hover:after {
+        width: 100%; /* Expands the underline */
+    }
+
+    /* Styling the scrollbar for dropdown */
+    .custom-select {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 1px solid #444;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        scrollbar-width: thin; /* For Firefox */
+        scrollbar-color: #888 transparent; /* Grey thumb, no track */
+    }
+
+    .custom-select::-webkit-scrollbar {
+        width: 8px; /* Thin scrollbar */
+    }
+
+    .custom-select::-webkit-scrollbar-thumb {
+        background-color: #888; /* Grey thumb */
+        border-radius: 10px; /* Rounded edges */
+    }
+
+    .custom-select::-webkit-scrollbar-thumb:hover {
+        background-color: #555; /* Darker grey on hover */
+    }
+
+    .custom-select::-webkit-scrollbar-track {
+        background: transparent; /* No background for track */
+    }
+
+    /* Focus effect for dropdown */
+    .custom-select:focus {
+        background-color: #f1f1f1;
+        color: #1e1e1e;
+    }
+
+    /* General Table Styling */
+    .table {
+        background-color: #1e1e1e; /* Match the page background */
+        color: #e0e0e0; /* Text color */
+        border-collapse: collapse; /* Merge borders */
+        width: 100%; /* Full width */
+        margin: 20px 0; /* Add spacing */
+    }
+
+    .table thead th {
+        background-color: #1e1e1e; /* Header background matches table */
+        color: #fff; /* Header text color */
+        padding: 12px; /* Spacing for header */
+        text-align: left; /* Align text to the left */
+        border-bottom: 2px solid #333; /* Subtle border for header */
+    }
+
+    .table tbody td {
+        padding: 12px; /* Spacing for cells */
+        text-align: left; /* Align text to the left */
+        border-top: none; /* Remove row borders */
+    }
+
+    /* Pagination Styling */
+    .pagination {
+        margin: 20px 0; /* Spacing around paginator */
+        display: flex;
+        justify-content: center; /* Center-align the paginator */
+        align-items: center;
+        gap: 10px; /* Space between elements */
+    }
+
+    .pagination a {
+        color: #f1c40f; /* Yellow text */
+        text-decoration: none; /* No underline */
+        padding: 8px 16px; /* Add padding */
+        border: 1px solid #f1c40f; /* Yellow border */
+        border-radius: 4px; /* Rounded corners */
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #f1c40f; /* Yellow background */
+        color: #1e1e1e; /* Dark text */
+    }
+
+    .pagination span {
+        color: #e0e0e0; /* Neutral color for page info */
+        font-size: 14px; /* Smaller text */
+    }
+
+    /* Styling for Tabs */
+    .nav-tabs .nav-link {
+        color: #b3b3b3; /* Neutral color */
+        background-color: #1e1e1e; /* Tab background matches theme */
+        border: 1px solid #333; /* Subtle border */
+        border-radius: 0; /* Remove rounded corners */
+        transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #fff; /* Active tab text color */
+        background-color: #333; /* Active tab background */
+        border-bottom: none; /* Merge active tab with content */
+        }
+
+    .nav-tabs .nav-link:hover {
+        color: #f1c40f; /* Highlight text on hover */
+        background-color: #444; /* Subtle background highlight */
+    }
+
+        /* General Information Section */
+        .general-info {
+            background-color: #1e1e1e; /* Match the dark theme */
+            color: #e0e0e0; /* Text color */
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+            margin-bottom: 20px; /* Space between cards */
+            border: 1px solid #333; /* Subtle border */
+        }
+
+        .general-info .category-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #f1c40f; /* Highlight for category headers */
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333; /* Separator line */
+            padding-bottom: 5px;
+        }
+
+        .general-info .info-item {
+            display: flex; /* Flexbox for icon and text alignment */
+            align-items: center;
+            padding: 10px 0; /* Space between items */
+        }
+
+        .general-info .info-item:not(:last-child) {
+            border-bottom: 1px solid #333; /* Divider line */
+        }
+
+        .general-info .icon {
+            flex-shrink: 0; /* Prevent icon from shrinking */
+            width: 40px;
+            height: 40px;
+            background-color: #333; /* Icon background */
+            color: #f1c40f; /* Icon color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%; /* Circular icon */
+            margin-right: 15px; /* Space between icon and text */
+            font-size: 20px; /* Icon size */
+        }
+
+        .general-info .text {
+            flex-grow: 1; /* Text takes up remaining space */
+        }
+
+        .general-info .text .label {
+            font-weight: bold; /* Label styling */
+            margin-bottom: 5px;
+        }
+
+        .general-info .text .value {
+            color: #b3b3b3; /* Subtle color for value */
+        }
+
+        .highlighted-cell {
+            color: #f1c40f; /* Highlighted link color */
+            text-decoration: none;
+        }
+
+        .highlighted-cell:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        /* Styling for navigation tabs */
+        /* Remove white outline from active and focused tabs */
+        .nav-tabs .nav-link:focus,
+        .nav-tabs .nav-link.active {
+            outline: none; /* Remove the default focus outline */
+            box-shadow: none; /* Remove the focus box-shadow */
+        }
+
+        /* Styling for navigation tabs */
+        .nav-tabs .nav-link {
+            color: #b3b3b3; /* Initial gray color */
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Hover effect for navigation tabs */
+        .nav-tabs .nav-link:hover {
+            color: #f1c40f; /* Yellow color on hover */
+        }
+
+        /* Underline animation */
+        .nav-tabs .nav-link:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #f1c40f; /* Yellow underline */
+            transition: width 0.3s ease;
+        }
+
+        /* Expand underline on hover */
+        .nav-tabs .nav-link:hover:after {
+            width: 100%;
+        }
+
+        /* Disabled tabs styling */
+        .nav-tabs .nav-link.disabled {
+            pointer-events: none;
+            color: #6c757d; /* Lighter gray for disabled tabs */
+            background-color: transparent;
+        }
+
+
+
+
+        
     </style>
 </head>
 <body>

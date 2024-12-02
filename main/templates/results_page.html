@@ -1,107 +1,69 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <h2>Search Results</h2>
-        <p>You searched for: <strong>{{ query }}</strong></p>
+<div class="container mt-4">
+    <h2>Search Results</h2>
+    <p>You searched for: <strong>{{ query }}</strong></p>
 
-        {% if paired_airports %}
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Airport</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for airport, label in paired_airports %}
-                        <tr>
-                            <th><a href="{% url 'airport_details' airport_id=airport %}" class="highlighted-cell">{{ label }}</a></th>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
+        {% for tab, count in sorted_tabs %}
+            <li class="nav-item">
+                <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
+                   id="{{ tab|lower }}-tab" 
+                   data-toggle="tab" 
+                   href="#{{ tab|lower }}" 
+                   role="tab" 
+                   aria-controls="{{ tab|lower }}" 
+                   aria-selected="{{ forloop.first }}">
+                    {{ tab }} 
+                    <span class="badge badge-primary">{{ count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 
-        {% if paired_regions %}
-            <h3>Regions</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Region</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for region, label in paired_regions %}
-                        <tr>
-                            <th>
-                                <a href="{% url 'region_details' region_id=region %}" class="highlighted-cell">{{ label }}</a>
-                            </th>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+    <!-- Tab Content -->
+    <div class="tab-content mt-4" id="resultsTabContent">
+        <!-- Airports -->
+        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Airports' %}show active{% endif %}" 
+             id="airports" 
+             role="tabpanel" 
+             aria-labelledby="airports-tab">
+            {% include 'partials/search_tab.html' with data=paginated_airports sort_by=sort_by tab_name="Airports" %}
+        </div>
 
-        {% if paired_navaids %}
-            <h3>Navaids</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Navaid</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for navaid, label in paired_navaids %}
-                        <tr>
-                            <th>
-                                <a href="{% url 'navaid_details' navaid_id=navaid %}" class="highlighted-cell">{{ label }}</a>
-                            </th>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-        {% if paired_runways %}
-            <h3>Runways</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Runway</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for runway, label in paired_runways %}
-                        <tr>
-                            <th>
-                                <a href="{% url 'runway_details' runway_id=runway %}" class="highlighted-cell">{{ label }}</a>
-                            </th>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-        {% if paired_countries %}
-            <h3>Countries</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Country</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for country, label in paired_countries %}
-                        <tr>
-                            <th>
-                                <a href="{% url 'country_details' iso_country=country %}" class="highlighted-cell">{{ label }}</a>
-                            </th>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+        <!-- Regions -->
+        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Regions' %}show active{% endif %}" 
+             id="regions" 
+             role="tabpanel" 
+             aria-labelledby="regions-tab">
+            {% include 'partials/search_tab.html' with data=paginated_regions sort_by=sort_by tab_name="Regions" %}
+        </div>
 
-        {% if not paired_airports and not paired_regions and not paired_navaids and not paired_runways and not paired_countries %}
-            <p>No results found for "{{ query }}".</p>
-        {% endif %}
+        <!-- Navaids -->
+        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Navaids' %}show active{% endif %}" 
+             id="navaids" 
+             role="tabpanel" 
+             aria-labelledby="navaids-tab">
+            {% include 'partials/search_tab.html' with data=paginated_navaids sort_by=sort_by tab_name="Navaids" %}
+        </div>
+
+        <!-- Runways -->
+        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Runways' %}show active{% endif %}" 
+             id="runways" 
+             role="tabpanel" 
+             aria-labelledby="runways-tab">
+            {% include 'partials/search_tab.html' with data=paginated_runways sort_by=sort_by tab_name="Runways" %}
+        </div>
+
+        <!-- Countries -->
+        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Countries' %}show active{% endif %}" 
+             id="countries" 
+             role="tabpanel" 
+             aria-labelledby="countries-tab">
+            {% include 'partials/search_tab.html' with data=paginated_countries sort_by=sort_by tab_name="Countries" %}
+        </div>
     </div>
+</div>
 {% endblock %}

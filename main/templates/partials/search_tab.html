@@ -1,0 +1,106 @@
+<head>
+    <style>
+        /* Styling for links */
+        .highlighted-cell {
+            color: #b3b3b3; /* Initial gray color */
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Hover effect for links */
+        .highlighted-cell:hover {
+            color: #f1c40f; /* Keep gray text on hover */
+            transition: width 0.3s ease;
+        }
+
+        /* Underline animation for links */
+        .highlighted-cell:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #f1c40f; /* Gray underline */
+            transition: width 0.3s ease;
+        }
+
+        /* Expand underline on hover */
+        .highlighted-cell:hover:after {
+            width: 100%; /* Expand underline fully */
+        }
+
+        /* Styling for pagination links */
+        .page-link {
+            color: #b3b3b3; /* Initial gray color for pagination */
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        /* Hover effect for pagination links */
+        .page-link:hover {
+            color: #b3b3b3; /* Keep gray text on hover */
+        }
+
+        /* Underline animation for pagination links */
+        .page-link:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #b3b3b3; /* Gray underline */
+            transition: width 0.3s ease;
+        }
+
+        /* Expand underline on hover */
+        .page-link:hover:after {
+            width: 100%; /* Expand underline fully */
+        }
+
+    </style>
+</head>
+
+<form method="get" class="form-inline mb-4">
+    <input type="hidden" name="query" value="{{ query }}">
+    <label for="sortBy">Sort by:</label>
+    <select id="sortBy" name="sort" class="form-control custom-select ml-2 mr-4" onchange="this.form.submit()">
+        <option value="asc" {% if sort_by == 'asc' %}selected{% endif %}>Alphabetical</option>
+        <option value="desc" {% if sort_by == 'desc' %}selected{% endif %}>Reverse Alphabetical</option>
+    </select>
+</form>
+
+<table class="table">
+    <tbody>
+        {% for item in data %}
+            <tr>
+                <td>
+                    {% if tab_name == "Airports" %}
+                        <a href="{% url 'airport_details' airport_id=item.0 %}" class="highlighted-cell">{{ item.1 }}</a>
+                    {% elif tab_name == "Regions" %}
+                        <a href="{% url 'region_details' region_id=item.0 %}" class="highlighted-cell">{{ item.1 }}</a>
+                    {% elif tab_name == "Navaids" %}
+                        <a href="{% url 'navaid_details' navaid_id=item.0 %}" class="highlighted-cell">{{ item.1 }}</a>
+                    {% elif tab_name == "Runways" %}
+                        <a href="{% url 'runway_details' runway_id=item.0 %}" class="highlighted-cell">{{ item.1 }}</a>
+                    {% elif tab_name == "Countries" %}
+                        <a href="{% url 'country_details' iso_country=item.0 %}" class="highlighted-cell">{{ item.1 }}</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        {% for page_num in data.paginator.page_range %}
+            <li class="page-item {% if data.number == page_num %}active{% endif %}">
+                <a class="page-link" href="?query={{ query }}&sort={{ sort_by }}&{{ tab_name|lower }}_page={{ page_num }}">{{ page_num }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

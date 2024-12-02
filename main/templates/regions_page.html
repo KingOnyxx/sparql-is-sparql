@@ -3,12 +3,27 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Region Details: {{ region_data.name }}</h2>
-    <table class="table">
-        <tr><th>ID</th><td>{{ region_data.id }}</td></tr>
-        <tr><th>Code</th><td>{{ region_data.code }}</td></tr>
-        <tr><th>Local Code</th><td>{{ region_data.local_code }}</td></tr>
-        <tr><th>Name</th><td>{{ region_data.name }}</td></tr>
-        <tr><th>ISO Country</th><td><a href="/countries/{{ region_data.iso_country }}" class="highlighted-cell">{{ region_data.country_label }}</a></td></tr>
-    </table>
+
+    <!-- Grouped Cards -->
+    {% for group in region_info_groups %}
+        <div class="general-info">
+            <div class="category-header">{{ group.category }}</div>
+            {% for field, value, icon in group.items %}
+                <div class="info-item">
+                    <div class="icon">{{ icon }}</div>
+                    <div class="text">
+                        <div class="label">{{ field }}</div>
+                        <div class="value">
+                            {% if value|safe %}
+                                {{ value|safe }}
+                            {% else %}
+                                {{ value }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}
