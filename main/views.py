@@ -143,10 +143,13 @@ def runway_view(request, runway_id):
 
 
 def country_view(request, iso_country):
-    # Get the flag URL using the get_flag function
+    """
+    View for displaying detailed information about a country, including airports and regions.
+    """
+    # Get the flag URL
     flag_url = get_flag(iso_country, WIKIDATA_SPARQL)
 
-    # Example data fetching (replace with actual SPARQL queries using cotw_queries)
+    # Fetch data for the country using cotw_queries
     try:
         result = cotw_queries(iso_country, SPARQL)
     except ValueError:
@@ -157,12 +160,6 @@ def country_view(request, iso_country):
         'code': iso_country,
         'name': result.get("label", ""),
         'continent': result.get("continentCode", ""),
-        'airports': result.get("airports", ""),
-        'airports_labels': result.get("airports_labels", ""),
-
-        'regions_contained': result.get("regions_contained", ""),
-        'regions_contained_labels': result.get("regions_contained_labels", ""),
-        
         'region_is_contained_in': result.get("Region", ""),
         'region_is_contained_in_label': result.get("Region", "")[29:],
         'population': result.get("Population", ""),
@@ -185,43 +182,61 @@ def country_view(request, iso_country):
         'service': result.get("ServiceRatio", "")
     }
 
+    # Prepare airport data
     airport_data = [
         {"label": label, "id": airport.split("/")[-1]}
-        for label, airport in zip(country_data['airports_labels'], country_data['airports'])
+        for label, airport in zip(result.get("airports_labels", []), result.get("airports", []))
     ]
-    unique_airports = list({f"{item['label']}_{item['id']}": item for item in airport_data}.values())
 
+    # Sort and filter airport data
+    sort_by_airport = request.GET.get("airport_sort", "label_asc")
+    airport_items_per_page = int(request.GET.get("airport_items_per_page", 10))
+    if sort_by_airport == "label_asc":
+        airport_data.sort(key=lambda x: x["label"].lower())
+    elif sort_by_airport == "label_desc":
+        airport_data.sort(key=lambda x: x["label"].lower(), reverse=True)
 
-    # Remove duplicates while preserving order for regions
-    region_data = [
-        {"label": label, "id": region.split("/")[-1]}
-        for label, region in zip(country_data['regions_contained_labels'], country_data['regions_contained'])
-    ]
-    unique_regions = list({f"{item['label']}_{item['id']}": item for item in region_data}.values())
-
-
-    # Paginate airports
+    # Pagination for airports
     airport_page_number = request.GET.get("airport_page", 1)
-    airport_paginator = Paginator(unique_airports, 10)
+    airport_paginator = Paginator(airport_data, airport_items_per_page)
     airports_page = airport_paginator.get_page(airport_page_number)
 
-    # Paginate regions
-    region_page_number = request.GET.get("region_page", 1)
-    region_paginator = Paginator(unique_regions, 10)
-    regions_page = region_paginator.get_page(region_page_number)
+    # Prepare region data
+    region_data = [
+        {"label": label, "id": region.split("/")[-1]}
+        for label, region in zip(result.get("regions_contained_labels", []), result.get("regions_contained", []))
+    ]
 
+    # Sort and filter region data
+    sort_by_region = request.GET.get("region_sort", "label_asc")
+    region_items_per_page = int(request.GET.get("region_items_per_page", 10))
+    if sort_by_region == "label_asc":
+        region_data.sort(key=lambda x: x["label"].lower())
+    elif sort_by_region == "label_desc":
+        region_data.sort(key=lambda x: x["label"].lower(), reverse=True)
+
+    # Pagination for regions
+    region_page_number = request.GET.get("region_page", 1)
+    region_paginator = Paginator(region_data, region_items_per_page)
+    regions_page = region_paginator.get_page(region_page_number)
 
     return render(
         request,
         'countries_page.html',
         {
             'country_data': country_data,
-            'page': {'title': 'Country Details'},
+            'page': {'title': f"Country Details: {country_data['name']}"},
             'flag_url': flag_url,
             'airports_page': airports_page,
-            'regions_page': regions_page
+            'regions_page': regions_page,
+            'airport_sort': sort_by_airport,
+            'airport_items_per_page': airport_items_per_page,
+            'region_sort': sort_by_region,
+            'region_items_per_page': region_items_per_page,
         }
     )
+
+
 
 
 

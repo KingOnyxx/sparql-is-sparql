@@ -2,91 +2,176 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Country Details: {{ country_data.name }}</h2>
+    <h2 class="mb-4">Country Details: {{ country_data.name }}</h2>
 
-    <!-- Display the flag image if the flag_url is available -->
     {% if flag_url %}
-    <div class="mb-3">
-        <img src="{{ flag_url }}" alt="Flag" style="width:200px;height:auto;">
-    </div>
+        <div class="mb-3">
+            <img src="{{ flag_url }}" alt="Flag" style="width:200px;height:auto;">
+        </div>
     {% else %}
-    <p>No flag found for {{ country_data.name }}.</p>
+        <p>No flag found for {{ country_data.name }}.</p>
     {% endif %}
 
-    <!-- Country Data Table -->
-    <table class="table">
-        <tr><th>Code</th><td>{{ country_data.code }}</td></tr>
-        <tr><th>Name</th><td>{{ country_data.name }}</td></tr>
-        <tr><th>Continent</th><td>{{ country_data.continent }}</td></tr>
-        <!-- For Airports -->
-        <tr>
-            <th>Airports</th>
-            <td>
-                <ul>
-                    {% for airport in airports_page %}
-                        <li>
-                            <a href="{% url 'airport_details' airport_id=airport.id %}" class="highlighted-cell">
-                                {{ airport.label }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div class="pagination">
+    <!-- Bootstrap Tabs -->
+    <ul class="nav nav-tabs" id="countryTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">
+                General Information
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="airports-tab" data-toggle="tab" href="#airports" role="tab" aria-controls="airports" aria-selected="false">
+                Airports
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="regions-tab" data-toggle="tab" href="#regions" role="tab" aria-controls="regions" aria-selected="false">
+                Regions
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content mt-4" id="countryTabContent">
+        <!-- General Information -->
+        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+            <table class="table">
+                <tr><th>Code</th><td>{{ country_data.code }}</td></tr>
+                <tr><th>Name</th><td>{{ country_data.name }}</td></tr>
+                <tr><th>Continent</th><td>{{ country_data.continent }}</td></tr>
+                <tr><th>Region is Contained In</th><td>{{ country_data.region_is_contained_in_label }}</td></tr>
+                <tr><th>Population</th><td>{{ country_data.population }}</td></tr>
+                <tr><th>Area</th><td>{{ country_data.area }}</td></tr>
+                <tr><th>Population Density</th><td>{{ country_data.pop_density }}</td></tr>
+                <tr><th>Coastline</th><td>{{ country_data.coastline }}</td></tr>
+                <tr><th>Net Migration</th><td>{{ country_data.net_migration }}</td></tr>
+                <tr><th>Infant Mortality</th><td>{{ country_data.infant_mortality }}</td></tr>
+                <tr><th>GDP</th><td>{{ country_data.gdp }}</td></tr>
+                <tr><th>Literacy Rate</th><td>{{ country_data.literacy }}</td></tr>
+                <tr><th>Phones</th><td>{{ country_data.phones }}</td></tr>
+                <tr><th>Arable</th><td>{{ country_data.arable }}</td></tr>
+                <tr><th>Crops</th><td>{{ country_data.crops }}</td></tr>
+                <tr><th>Other</th><td>{{ country_data.other }}</td></tr>
+                <tr><th>Climate</th><td>{{ country_data.climate }}</td></tr>
+                <tr><th>Birthrate</th><td>{{ country_data.birthrate }}</td></tr>
+                <tr><th>Deathrate</th><td>{{ country_data.deathrate }}</td></tr>
+                <tr><th>Agriculture</th><td>{{ country_data.agriculture }}</td></tr>
+                <tr><th>Industry</th><td>{{ country_data.industry }}</td></tr>
+                <tr><th>Service</th><td>{{ country_data.service }}</td></tr>
+            </table>
+        </div>
+
+        <!-- Airports -->
+        <div class="tab-pane fade" id="airports" role="tabpanel" aria-labelledby="airports-tab">
+            <h4>Airports</h4>
+            <form method="get" class="form-inline mb-4">
+                <label for="airportSort">Sort by:</label>
+                <select id="airportSort" name="airport_sort" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="label_asc" {% if airport_sort == "label_asc" %}selected{% endif %}>Airport Name (A-Z)</option>
+                    <option value="label_desc" {% if airport_sort == "label_desc" %}selected{% endif %}>Airport Name (Z-A)</option>
+                </select>
+
+                <label for="airportItemsPerPage" class="ml-4">Show:</label>
+                <select id="airportItemsPerPage" name="airport_items_per_page" class="form-control ml-2" onchange="this.form.submit()">
+                    <option value="10" {% if airport_items_per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if airport_items_per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if airport_items_per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+                airports per page
+            </form>
+            <ul>
+                {% for airport in airports_page %}
+                    <li><a href="{% url 'airport_details' airport_id=airport.id %}">{{ airport.label }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <!-- Pagination -->
+            <div class="pagination d-flex justify-content-between align-items-center">
+                <div>
                     {% if airports_page.has_previous %}
-                        <a href="?airport_page={{ airports_page.previous_page_number }}&region_page={{ regions_page.number }}">Previous</a>
+                        <a href="?airport_page={{ airports_page.previous_page_number }}&airport_sort={{ airport_sort }}&airport_items_per_page={{ airport_items_per_page }}" class="btn btn-outline-primary">
+                            &laquo; Previous
+                        </a>
                     {% endif %}
-                    <span>Page {{ airports_page.number }} of {{ airports_page.paginator.num_pages }}</span>
+                </div>
+                <span>Page {{ airports_page.number }} of {{ airports_page.paginator.num_pages }}</span>
+                <div>
                     {% if airports_page.has_next %}
-                        <a href="?airport_page={{ airports_page.next_page_number }}&region_page={{ regions_page.number }}">Next</a>
+                        <a href="?airport_page={{ airports_page.next_page_number }}&airport_sort={{ airport_sort }}&airport_items_per_page={{ airport_items_per_page }}" class="btn btn-outline-primary">
+                            Next &raquo;
+                        </a>
                     {% endif %}
                 </div>
-            </td>
-        </tr>
-        
-        <tr>
-            <th>Regions Contained</th>
-            <td>
-                <ul>
-                    {% for region in regions_page %}
-                        <li>
-                            <a href="{% url 'region_details' region_id=region.id %}" class="highlighted-cell">
-                                {{ region.label }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div class="pagination">
+            </div>
+        </div>
+
+        <!-- Regions -->
+        <div class="tab-pane fade" id="regions" role="tabpanel" aria-labelledby="regions-tab">
+            <h4>Regions</h4>
+            <form method="get" class="form-inline mb-4">
+                <label for="regionSort">Sort by:</label>
+                <select id="regionSort" name="region_sort" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="label_asc" {% if region_sort == "label_asc" %}selected{% endif %}>Region Name (A-Z)</option>
+                    <option value="label_desc" {% if region_sort == "label_desc" %}selected{% endif %}>Region Name (Z-A)</option>
+                </select>
+
+                <label for="regionItemsPerPage" class="ml-4">Show:</label>
+                <select id="regionItemsPerPage" name="region_items_per_page" class="form-control ml-2" onchange="this.form.submit()">
+                    <option value="10" {% if region_items_per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if region_items_per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if region_items_per_page == 50 %}selected{% endif %}>50</option>
+                </select>
+                regions per page
+            </form>
+            <ul>
+                {% for region in regions_page %}
+                    <li><a href="{% url 'region_details' region_id=region.id %}">{{ region.label }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <!-- Pagination -->
+            <div class="pagination d-flex justify-content-between align-items-center">
+                <div>
                     {% if regions_page.has_previous %}
-                        <a href="?region_page={{ regions_page.previous_page_number }}&airport_page={{ airports_page.number }}">Previous</a>
-                    {% endif %}
-                    <span>Page {{ regions_page.number }} of {{ regions_page.paginator.num_pages }}</span>
-                    {% if regions_page.has_next %}
-                        <a href="?region_page={{ regions_page.next_page_number }}&airport_page={{ airports_page.number }}">Next</a>
+                        <a href="?region_page={{ regions_page.previous_page_number }}&region_sort={{ region_sort }}&region_items_per_page={{ region_items_per_page }}" class="btn btn-outline-primary">
+                            &laquo; Previous
+                        </a>
                     {% endif %}
                 </div>
-            </td>
-        </tr>
-        
-        
-        <tr><th>Region is Contained In</th><td>{{ country_data.region_is_contained_in_label }}</td></tr>
-        <tr><th>Population</th><td>{{ country_data.population }}</td></tr>
-        <tr><th>Area</th><td>{{ country_data.area }}</td></tr>
-        <tr><th>Population Density</th><td>{{ country_data.pop_density }}</td></tr>
-        <tr><th>Coastline</th><td>{{ country_data.coastline }}</td></tr>
-        <tr><th>Net Migration</th><td>{{ country_data.net_migration }}</td></tr>
-        <tr><th>Infant Mortality</th><td>{{ country_data.infant_mortality }}</td></tr>
-        <tr><th>GDP</th><td>{{ country_data.gdp }}</td></tr>
-        <tr><th>Literacy Rate</th><td>{{ country_data.literacy }}</td></tr>
-        <tr><th>Phones</th><td>{{ country_data.phones }}</td></tr>
-        <tr><th>Arable</th><td>{{ country_data.arable }}</td></tr>
-        <tr><th>Crops</th><td>{{ country_data.crops }}</td></tr>
-        <tr><th>Other</th><td>{{ country_data.other }}</td></tr>
-        <tr><th>Climate</th><td>{{ country_data.climate }}</td></tr>
-        <tr><th>Birthrate</th><td>{{ country_data.birthrate }}</td></tr>
-        <tr><th>Deathrate</th><td>{{ country_data.deathrate }}</td></tr>
-        <tr><th>Agriculture</th><td>{{ country_data.agriculture }}</td></tr>
-        <tr><th>Industry</th><td>{{ country_data.industry }}</td></tr>
-        <tr><th>Service</th><td>{{ country_data.service }}</td></tr>
-    </table>
+                <span>Page {{ regions_page.number }} of {{ regions_page.paginator.num_pages }}</span>
+                <div>
+                    {% if regions_page.has_next %}
+                        <a href="?region_page={{ regions_page.next_page_number }}&region_sort={{ region_sort }}&region_items_per_page={{ region_items_per_page }}" class="btn btn-outline-primary">
+                            Next &raquo;
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Save the active tab to localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if there's a saved tab in localStorage
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            const activeTab = document.querySelector(`[href="${savedTab}"]`);
+            if (activeTab) {
+                activeTab.click();
+            }
+        }
+
+        // Save the currently selected tab to localStorage on click
+        const tabs = document.querySelectorAll('#countryTabs .nav-link');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                localStorage.setItem('activeTab', tab.getAttribute('href'));
+            });
+        });
+    });
+    
+</script>
 {% endblock %}
