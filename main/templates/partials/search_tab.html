@@ -61,7 +61,56 @@
             width: 100%; /* Expand underline fully */
         }
 
-    </style>
+        /* Pagination Styling */
+        .pagination {
+            margin: 20px 0; /* Spacing around paginator */
+            display: flex;
+            justify-content: center; /* Center-align the paginator */
+            align-items: center;
+            gap: 10px; /* Space between elements */
+            background-color: #1e1e1e; /* Match background */
+            padding: 10px; /* Add padding */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        .pagination a {
+            color: #f1c40f; /* Yellow text */
+            text-decoration: none; /* No underline */
+            padding: 8px 16px; /* Add padding */
+            border: 1px solid #f1c40f; /* Yellow border */
+            border-radius: 4px; /* Rounded corners */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: #1e1e1e; /* Match page background */
+        }
+
+        .pagination a:hover {
+            background-color: #f1c40f; /* Yellow background */
+            color: #1e1e1e; /* Dark text */
+        }
+
+        .pagination span {
+            color: #f1c40f; /* Yellow color for "..." */
+            font-size: 14px; /* Smaller text */
+            text-decoration: none; /* No underline */
+            padding: 8px; /* Add padding */
+            background-color: #1e1e1e; /* Match page background */
+            border-radius: 4px; /* Rounded corners */
+        }
+
+        .page-item.active .page-link {
+            background-color: #f1c40f; /* Active page background */
+            color: #1e1e1e; /* Active text color */
+            border-color: #f1c40f; /* Match border with active color */
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #1e1e1e; /* Disabled background matches theme */
+            color: #f1c40f; /* Yellow text for "..." */
+            border: none; /* No border for "..." */
+            cursor: default; /* No pointer on disabled */
+        }
+</style>
+
 </head>
 <form method="get" class="form-inline mb-4">
     <input type="hidden" name="query" value="{{ query }}">

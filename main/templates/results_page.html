@@ -2,81 +2,14 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Search Results</h2>
-    <p>You searched for: <strong>{{ query }}</strong></p>
+    <h2 id="a">Search Results</h2>
+    <p id="b">You searched for: <strong>{{ query }}</strong></p>
 
     <!-- Tab Navigation -->
-    <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
-        {% for tab, count in sorted_tabs %}
-            <li class="nav-item">
-                <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
-                   id="{{ tab|lower }}-tab" 
-                   data-toggle="tab" 
-                   href="#{{ tab|lower }}" 
-                   role="tab" 
-                   aria-controls="{{ tab|lower }}" 
-                   aria-selected="{{ forloop.first }}">
-                    {{ tab }} 
-                    <span class="badge badge-primary">{{ count }}</span>
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    <div id="searchNoQuery"></div>
+    <ul class="nav nav-tabs" id="resultsTabs" role="tablist"></ul>
 
     <!-- Tab Content -->
-<div class="tab-content mt-4" id="resultsTabContent">
-    {% for tab, count in sorted_tabs %}
-        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
-             id="{{ tab|lower }}" 
-             role="tabpanel" 
-             aria-labelledby="{{ tab|lower }}-tab">
-            {% if tab == "Airports" %}
-                {% include 'partials/search_tab.html' with data=paginated_airports pagination_range=airport_pagination_range sort_by=sort_by tab_name="Airports" %}
-            {% elif tab == "Regions" %}
-                {% include 'partials/search_tab.html' with data=paginated_regions pagination_range=region_pagination_range sort_by=sort_by tab_name="Regions" %}
-            {% elif tab == "Navaids" %}
-                {% include 'partials/search_tab.html' with data=paginated_navaids pagination_range=navaid_pagination_range sort_by=sort_by tab_name="Navaids" %}
-            {% elif tab == "Runways" %}
-                {% include 'partials/search_tab.html' with data=paginated_runways pagination_range=runway_pagination_range sort_by=sort_by tab_name="Runways" %}
-            {% elif tab == "Countries" %}
-                {% include 'partials/search_tab.html' with data=paginated_countries pagination_range=country_pagination_range sort_by=sort_by tab_name="Countries" %}
-            {% else %}
-                <p>No results available for {{ tab }}.</p>
-            {% endif %}
-        </div>
-    {% endfor %}
+    <div class="tab-content mt-4" id="resultsTabContent"></div>
 </div>
-
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Restore the saved tab
-        const savedTab = localStorage.getItem('activeTab');
-        if (savedTab) {
-            const activeTab = document.querySelector(`[href="${savedTab}"]`);
-            if (activeTab) {
-                activeTab.click(); // Activate the saved tab
-            }
-        }
-
-        // Save the current tab when it is clicked
-        const tabs = document.querySelectorAll('#resultsTabs .nav-link');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function () {
-                localStorage.setItem('activeTab', tab.getAttribute('href'));
-            });
-        });
-
-        // Update the "Sort by" dropdown's form to preserve the active tab
-        const sortByForm = document.querySelector('form');
-        if (sortByForm) {
-            const activeTabInput = document.createElement('input');
-            activeTabInput.type = 'hidden';
-            activeTabInput.name = 'active_tab';
-            activeTabInput.value = savedTab || '#airports'; // Default to "Airports" tab if no tab is saved
-            sortByForm.appendChild(activeTabInput);
-        }
-    });
-</script>
 {% endblock %}

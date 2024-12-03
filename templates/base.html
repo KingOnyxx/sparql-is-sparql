@@ -17,13 +17,6 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
 
     <style>
-
-        
-
-        
-
-
-
         /* Search Box Styling (jangan pernah diganti) */
         .search-box {
             width: fit-content;
@@ -73,6 +66,48 @@
             transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
         }
         /*  */
+
+        .large-search-box .input-search {
+            height: 70px; /* Increased height */
+            width: 70px; /* Increased width */
+            border-style: none;
+            padding: 15px; /* Increased padding */
+            font-size: 24px; /* Increased font size */
+            letter-spacing: 2px;
+            outline: none;
+            border-radius: 35px; /* Adjusted border radius */
+            transition: all 0.5s ease-in-out;
+            background-color: #1e1e1e;
+            padding-right: 50px; /* Adjusted padding-right */
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .large-search-box .input-search::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 24px; /* Increased font size */
+            letter-spacing: 2px;
+            font-weight: 100;
+        }
+        .large-search-box .btn-search {
+            width: 70px; /* Increased width */
+            height: 70px; /* Increased height */
+            border-style: none;
+            font-size: 24px; /* Increased font size */
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            border-radius: 50%;
+            position: absolute;
+            right: 0px;
+            color: #a0a0a0;
+            background-color: transparent;
+        }
+        .large-search-box .input-search:focus {
+            width: 400px; /* Increased width */
+            border-radius: 0px;
+            background-color: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+        }
         
         /* Navbar Styling */
         .navbar {
@@ -133,7 +168,7 @@
         body {
             background-color: #1e1e1e; /* Dark gray */
             color: #e0e0e0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Comic Sans', sans-serif;
         }
 
         /* Floating Stack Styling */
@@ -500,10 +535,10 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'results_view' %}">WorldTraCe</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="/">WorldTraCe</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="color: rgb(170, 170, 170);">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -526,12 +561,8 @@
                 </ul>
 
                 <!-- Search Bar -->
-                <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
-                    <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                        <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
-                        <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
-                    </div>
-                </form>
+                <div id="searchNav"></div>
+                
             </div>
         </div>
     </nav>
@@ -554,7 +585,98 @@
 
     <!-- Scripts -->
     <script>
-        let isExpanded = false; // Track if the search bar is expanded
+        window.onload = noQuery();
+        function noQuery() {
+    const url = window.location;
+    const urlParams = new URLSearchParams(url.search);
+
+    // Check if there is a query or if we are at the root path
+    if (url.pathname === '/' && !urlParams.has('query')) {
+        // Hide elements for no query
+        document.getElementById('resultsTabs').setAttribute('style', 'display: none; visibility: hidden;');
+        document.getElementById('resultsTabContent').setAttribute('style', 'display: none; visibility: hidden;');
+        document.getElementById('a').setAttribute('style', 'display: none;');
+        document.getElementById('b').setAttribute('style', 'display: none;');
+        document.getElementById('searchNoQuery').innerHTML = `
+            <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
+                <div class="search-box large-search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                    <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
+                </div>
+            </form>
+        `;
+        expandSearch();
+        document.getElementById('searchNoQuery').setAttribute('style', 'display: flex; justify-content: center; align-items: center; height: 70vh; font-size: 3rem;');
+    } else {
+        // Show elements for results
+        document.getElementById('searchNav').innerHTML = `
+            <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
+                <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                    <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
+                </div>
+            </form>
+        `;
+        if (url.pathname == '/'){
+            document.getElementById('resultsTabs').setAttribute('style', 'display: block;');
+            document.getElementById('resultsTabContent').setAttribute('style', 'display: block;');
+            document.getElementById('a').setAttribute('style', 'display: block;');
+            document.getElementById('b').setAttribute('style', 'display: block;');
+            // Render the tabs dynamically
+            const tabsHtml = `
+                <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
+                    {% for tab, count in sorted_tabs %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
+                            id="{{ tab|lower }}-tab" 
+                            data-toggle="tab" 
+                            href="#{{ tab|lower }}" 
+                            role="tab" 
+                            aria-controls="{{ tab|lower }}" 
+                            aria-selected="{{ forloop.first }}">
+                                {{ tab }} 
+                                <span class="badge badge-primary">{{ count }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            `;
+            document.getElementById('resultsTabs').innerHTML = tabsHtml;
+    
+            // Render the tab content dynamically
+            const tabsContentHtml = `
+                {% for tab, count in sorted_tabs %}
+                    <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                         id="{{ tab|lower }}" 
+                         role="tabpanel" 
+                         aria-labelledby="{{ tab|lower }}-tab">
+                        {% if tab == "Airports" %}
+                            {% include 'partials/search_tab.html' with data=paginated_airports pagination_range=airport_pagination_range sort_by=sort_by tab_name="Airports" %}
+                        {% elif tab == "Regions" %}
+                            {% include 'partials/search_tab.html' with data=paginated_regions pagination_range=region_pagination_range sort_by=sort_by tab_name="Regions" %}
+                        {% elif tab == "Navaids" %}
+                            {% include 'partials/search_tab.html' with data=paginated_navaids pagination_range=navaid_pagination_range sort_by=sort_by tab_name="Navaids" %}
+                        {% elif tab == "Runways" %}
+                            {% include 'partials/search_tab.html' with data=paginated_runways pagination_range=runway_pagination_range sort_by=sort_by tab_name="Runways" %}
+                        {% elif tab == "Countries" %}
+                            {% include 'partials/search_tab.html' with data=paginated_countries pagination_range=country_pagination_range sort_by=sort_by tab_name="Countries" %}
+                        {% else %}
+                            <p>No results available for {{ tab }}.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                `;
+                isExpanded = false;
+                document.getElementById('searchNoQuery').removeAttribute('style');
+            document.getElementById('resultsTabContent').innerHTML = tabsContentHtml;
+            
+            // Adjust search bar in navbar
+        }
+
+        
+    }
+}
+
     
         function handleSearchClick() {
             const searchInput = document.getElementById('searchInput');
