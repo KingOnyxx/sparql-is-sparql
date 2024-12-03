@@ -13,46 +13,74 @@ from django.core.paginator import Paginator
 SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
-def results_view(request):
-    query = request.GET.get('query', '')
+from django.core.paginator import Paginator
 
-    # Get sorting parameters
-    sort_by = request.GET.get('sort', 'asc')
-    page_numbers = {tab: int(request.GET.get(f'{tab.lower()}_page', 1)) for tab in ['Airports', 'Regions', 'Navaids', 'Runways', 'Countries']}
+def calculate_pagination_range(current_page, total_pages):
+    """
+    Calculate a range of pages to display in the pagination bar.
+    Shows:
+    - First page
+    - Last page
+    - Current page ± 2 pages
+    - Ellipses ('None') for skipped ranges
+    """
+    if total_pages <= 7:
+        # If there are 7 or fewer pages, show all
+        return list(range(1, total_pages + 1))
+
+    # Always show the first and last pages
+    range_to_display = [1, total_pages]
+
+    # Add current page ± 2, ensuring valid page numbers
+    for i in range(current_page - 2, current_page + 3):
+        if 1 < i < total_pages:  # Exclude first and last (already included)
+            range_to_display.append(i)
+
+    # Sort and deduplicate the range
+    range_to_display = sorted(set(range_to_display))
+
+    # Insert ellipses ('None') for skipped ranges
+    final_range = []
+    for idx, page in enumerate(range_to_display):
+        final_range.append(page)
+        if idx + 1 < len(range_to_display) and range_to_display[idx + 1] != page + 1:
+            final_range.append(None)  # Ellipsis placeholder
+
+    return final_range
+
+
+def results_view(request):
+    query = request.GET.get('query', '').strip()
+    sort_by = request.GET.get('sort', 'asc').lower()
 
     # Fetch search results
     result = search_queries(query, SPARQL)
 
-    # Prepare result data
-    results_data = {
-        'airports': [airport[27:] for airport in result.get("airports", [])],
-        'airport_labels': [label for label in result.get("airport_labels", [])],
-        'regions': [region[27:] for region in result.get("regions", [])],
-        'region_labels': [label.replace("_", " ") for label in result.get("region_labels", [])],
-        'navaids': [navaid[27:] for navaid in result.get("navaids", [])],
-        'navaid_labels': [label for label in result.get("navaid_labels", [])],
-        'runways': [runway[27:] for runway in result.get("runways", [])],
-        'runway_labels': [label for label in result.get("runway_labels", [])],
-        'countries': [country[27:] for country in result.get("countries", [])],
-        'country_labels': [label for label in result.get("country_labels", [])],
-    }
+    # Prepare results
+    def extract_data(items, labels):
+        return list(zip(
+            [item[27:] if item else '' for item in items],
+            [label.replace("_", " ") for label in labels]
+        ))
 
     # Pair and sort results
-    def sort_results(paired):
-        return sorted(paired, key=lambda x: x[1].lower(), reverse=(sort_by == 'desc'))
+    paired_airports = sorted(extract_data(result.get("airports", []), result.get("airport_labels", [])), key=lambda x: x[1].lower(), reverse=(sort_by == 'desc'))
+    paired_regions = sorted(extract_data(result.get("regions", []), result.get("region_labels", [])), key=lambda x: x[1].lower(), reverse=(sort_by == 'desc'))
+    paired_navaids = sorted(extract_data(result.get("navaids", []), result.get("navaid_labels", [])), key=lambda x: x[1].lower(), reverse=(sort_by == 'desc'))
+    paired_runways = sorted(extract_data(result.get("runways", []), result.get("runway_labels", [])), key=lambda x: x[1].lower(), reverse=(sort_by == 'desc'))
+    paired_countries = sorted(extract_data(result.get("countries", []), result.get("country_labels", [])), key=lambda x: x[1].lower(), reverse=(sort_by == 'desc'))
 
-    paired_airports = sort_results(zip(results_data['airports'], results_data['airport_labels']))
-    paired_regions = sort_results(zip(results_data['regions'], results_data['region_labels']))
-    paired_navaids = sort_results(zip(results_data['navaids'], results_data['navaid_labels']))
-    paired_runways = sort_results(zip(results_data['runways'], results_data['runway_labels']))
-    paired_countries = sort_results(zip(results_data['countries'], results_data['country_labels']))
+    # Pagination
+    def paginate(data, page_param):
+        page_number = int(request.GET.get(page_param, 1))
+        paginator = Paginator(data, 10)
+        return paginator.get_page(page_number), calculate_pagination_range(page_number, paginator.num_pages)
 
-    # Create paginators
-    paginated_airports = Paginator(paired_airports, 10).get_page(page_numbers['Airports'])
-    paginated_regions = Paginator(paired_regions, 10).get_page(page_numbers['Regions'])
-    paginated_navaids = Paginator(paired_navaids, 10).get_page(page_numbers['Navaids'])
-    paginated_runways = Paginator(paired_runways, 10).get_page(page_numbers['Runways'])
-    paginated_countries = Paginator(paired_countries, 10).get_page(page_numbers['Countries'])
+    paginated_airports, airport_pagination_range = paginate(paired_airports, 'airports_page')
+    paginated_regions, region_pagination_range = paginate(paired_regions, 'regions_page')
+    paginated_navaids, navaid_pagination_range = paginate(paired_navaids, 'navaids_page')
+    paginated_runways, runway_pagination_range = paginate(paired_runways, 'runways_page')
+    paginated_countries, country_pagination_range = paginate(paired_countries, 'countries_page')
 
     # Result counts
     result_counts = {
@@ -66,18 +94,30 @@ def results_view(request):
     # Sort tabs by result count
     sorted_tabs = sorted(result_counts.items(), key=lambda x: x[1], reverse=True)
 
+    print(paginated_airports, airport_pagination_range)
+
+
     return render(request, 'results_page.html', {
         'query': query,
         'paginated_airports': paginated_airports,
+        'airport_pagination_range': airport_pagination_range,
         'paginated_regions': paginated_regions,
+        'region_pagination_range': region_pagination_range,
         'paginated_navaids': paginated_navaids,
+        'navaid_pagination_range': navaid_pagination_range,
         'paginated_runways': paginated_runways,
+        'runway_pagination_range': runway_pagination_range,
         'paginated_countries': paginated_countries,
+        'country_pagination_range': country_pagination_range,
         'result_counts': result_counts,
         'sorted_tabs': sorted_tabs,
         'sort_by': sort_by,
         'page': {'title': 'Search Results'},
     })
+
+
+
+
 
 
 

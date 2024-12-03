@@ -24,46 +24,59 @@
     </ul>
 
     <!-- Tab Content -->
-    <div class="tab-content mt-4" id="resultsTabContent">
-        <!-- Airports -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Airports' %}show active{% endif %}" 
-             id="airports" 
+<div class="tab-content mt-4" id="resultsTabContent">
+    {% for tab, count in sorted_tabs %}
+        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+             id="{{ tab|lower }}" 
              role="tabpanel" 
-             aria-labelledby="airports-tab">
-            {% include 'partials/search_tab.html' with data=paginated_airports sort_by=sort_by tab_name="Airports" %}
+             aria-labelledby="{{ tab|lower }}-tab">
+            {% if tab == "Airports" %}
+                {% include 'partials/search_tab.html' with data=paginated_airports pagination_range=airport_pagination_range sort_by=sort_by tab_name="Airports" %}
+            {% elif tab == "Regions" %}
+                {% include 'partials/search_tab.html' with data=paginated_regions pagination_range=region_pagination_range sort_by=sort_by tab_name="Regions" %}
+            {% elif tab == "Navaids" %}
+                {% include 'partials/search_tab.html' with data=paginated_navaids pagination_range=navaid_pagination_range sort_by=sort_by tab_name="Navaids" %}
+            {% elif tab == "Runways" %}
+                {% include 'partials/search_tab.html' with data=paginated_runways pagination_range=runway_pagination_range sort_by=sort_by tab_name="Runways" %}
+            {% elif tab == "Countries" %}
+                {% include 'partials/search_tab.html' with data=paginated_countries pagination_range=country_pagination_range sort_by=sort_by tab_name="Countries" %}
+            {% else %}
+                <p>No results available for {{ tab }}.</p>
+            {% endif %}
         </div>
-
-        <!-- Regions -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Regions' %}show active{% endif %}" 
-             id="regions" 
-             role="tabpanel" 
-             aria-labelledby="regions-tab">
-            {% include 'partials/search_tab.html' with data=paginated_regions sort_by=sort_by tab_name="Regions" %}
-        </div>
-
-        <!-- Navaids -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Navaids' %}show active{% endif %}" 
-             id="navaids" 
-             role="tabpanel" 
-             aria-labelledby="navaids-tab">
-            {% include 'partials/search_tab.html' with data=paginated_navaids sort_by=sort_by tab_name="Navaids" %}
-        </div>
-
-        <!-- Runways -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Runways' %}show active{% endif %}" 
-             id="runways" 
-             role="tabpanel" 
-             aria-labelledby="runways-tab">
-            {% include 'partials/search_tab.html' with data=paginated_runways sort_by=sort_by tab_name="Runways" %}
-        </div>
-
-        <!-- Countries -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Countries' %}show active{% endif %}" 
-             id="countries" 
-             role="tabpanel" 
-             aria-labelledby="countries-tab">
-            {% include 'partials/search_tab.html' with data=paginated_countries sort_by=sort_by tab_name="Countries" %}
-        </div>
-    </div>
+    {% endfor %}
 </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Restore the saved tab
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            const activeTab = document.querySelector(`[href="${savedTab}"]`);
+            if (activeTab) {
+                activeTab.click(); // Activate the saved tab
+            }
+        }
+
+        // Save the current tab when it is clicked
+        const tabs = document.querySelectorAll('#resultsTabs .nav-link');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                localStorage.setItem('activeTab', tab.getAttribute('href'));
+            });
+        });
+
+        // Update the "Sort by" dropdown's form to preserve the active tab
+        const sortByForm = document.querySelector('form');
+        if (sortByForm) {
+            const activeTabInput = document.createElement('input');
+            activeTabInput.type = 'hidden';
+            activeTabInput.name = 'active_tab';
+            activeTabInput.value = savedTab || '#airports'; // Default to "Airports" tab if no tab is saved
+            sortByForm.appendChild(activeTabInput);
+        }
+    });
+</script>
 {% endblock %}
