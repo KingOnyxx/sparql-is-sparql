@@ -587,8 +587,10 @@
     <script>
         window.onload = noQuery();
         function noQuery() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (!urlParams.has('query')) {
+            const url = window.location;
+            const urlParams = new URLSearchParams(url.search);
+            console.log(url.search);
+            if (url.pathname == '/' && !urlParams.has('query')) {
                 document.getElementById('resultsTabs').setAttribute('style', 'display: none; visibility: hidden;');
                 document.getElementById('resultsTabContent').setAttribute('style', 'display: none; visibility: hidden;');
                 document.getElementById('a').setAttribute('style', 'display: none;');
@@ -606,78 +608,85 @@
                     
                 }
                 else {
-                    document.getElementById('resultsTabs').innerHTML=`
-                    {% for tab, count in sorted_tabs %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
-                            id="{{ tab|lower }}-tab" 
-                            data-toggle="tab" 
-                            href="#{{ tab|lower }}" 
-                            role="tab" 
-                            aria-controls="{{ tab|lower }}" 
-                            aria-selected="{{ forloop.first }}">
-                                {{ tab }} 
-                                <span class="badge badge-primary">{{ count }}</span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                    `;
-                    document.getElementById('resultsTabContent').innerHTML=`
-                     <!-- Airports -->
-                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Airports' %}show active{% endif %}" 
-                        id="airports" 
-                        role="tabpanel" 
-                        aria-labelledby="airports-tab">
-                        {% include 'partials/search_tab.html' with data=paginated_airports sort_by=sort_by tab_name="Airports" %}
-                    </div>
-
-                    <!-- Regions -->
-                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Regions' %}show active{% endif %}" 
-                        id="regions" 
-                        role="tabpanel" 
-                        aria-labelledby="regions-tab">
-                        {% include 'partials/search_tab.html' with data=paginated_regions sort_by=sort_by tab_name="Regions" %}
-                    </div>
-
-                    <!-- Navaids -->
-                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Navaids' %}show active{% endif %}" 
-                        id="navaids" 
-                        role="tabpanel" 
-                        aria-labelledby="navaids-tab">
-                        {% include 'partials/search_tab.html' with data=paginated_navaids sort_by=sort_by tab_name="Navaids" %}
-                    </div>
-
-                    <!-- Runways -->
-                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Runways' %}show active{% endif %}" 
-                        id="runways" 
-                        role="tabpanel" 
-                        aria-labelledby="runways-tab">
-                        {% include 'partials/search_tab.html' with data=paginated_runways sort_by=sort_by tab_name="Runways" %}
-                    </div>
-
-                    <!-- Countries -->
-                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Countries' %}show active{% endif %}" 
-                        id="countries" 
-                        role="tabpanel" 
-                        aria-labelledby="countries-tab">
-                        {% include 'partials/search_tab.html' with data=paginated_countries sort_by=sort_by tab_name="Countries" %}
-                    </div>
-                    `;
-                    document.getElementById('resultsTabs').setAttribute('style', 'display: block;');
-                    document.getElementById('resultsTabContent').setAttribute('style', 'display: block;');
-                    document.getElementById('a').setAttribute('style', 'display: block;');
-                    document.getElementById('b').setAttribute('style', 'display: block;');
+                    console.log("masuk sini")
                     document.getElementById('searchNav').innerHTML = `
                     <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
                         <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
                             <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
                             <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
-                            </div>
-                            </form>
-                    `;
-                    isExpanded = false;
-                    document.getElementById('searchNoQuery').removeAttribute('style');
-                        }
+                        </div>
+                    </form>
+                            `;
+                    if (url.pathname == '/'){
+                        document.getElementById('resultsTabs').setAttribute('style', 'display: block;');
+                        document.getElementById('resultsTabContent').setAttribute('style', 'display: block;');
+                        document.getElementById('a').setAttribute('style', 'display: block;');
+                        document.getElementById('b').setAttribute('style', 'display: block;');
+                        document.getElementById('resultsTabs').innerHTML=
+                        `
+                        {% for tab, count in sorted_tabs %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
+                                id="{{ tab|lower }}-tab" 
+                                data-toggle="tab" 
+                                href="#{{ tab|lower }}" 
+                                role="tab" 
+                                aria-controls="{{ tab|lower }}" 
+                                aria-selected="{{ forloop.first }}">
+                                    {{ tab }} 
+                                    <span class="badge badge-primary">{{ count }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                        `;
+                        document.getElementById('resultsTabContent').innerHTML=`
+                        <!-- Airports -->
+                        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Airports' %}show active{% endif %}" 
+                            id="airports" 
+                            role="tabpanel" 
+                            aria-labelledby="airports-tab">
+                            {% include 'partials/search_tab.html' with data=paginated_airports sort_by=sort_by tab_name="Airports" %}
+                        </div>
+    
+                        <!-- Regions -->
+                        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Regions' %}show active{% endif %}" 
+                            id="regions" 
+                            role="tabpanel" 
+                            aria-labelledby="regions-tab">
+                            {% include 'partials/search_tab.html' with data=paginated_regions sort_by=sort_by tab_name="Regions" %}
+                        </div>
+    
+                        <!-- Navaids -->
+                        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Navaids' %}show active{% endif %}" 
+                            id="navaids" 
+                            role="tabpanel" 
+                            aria-labelledby="navaids-tab">
+                            {% include 'partials/search_tab.html' with data=paginated_navaids sort_by=sort_by tab_name="Navaids" %}
+                        </div>
+    
+                        <!-- Runways -->
+                        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Runways' %}show active{% endif %}" 
+                            id="runways" 
+                            role="tabpanel" 
+                            aria-labelledby="runways-tab">
+                            {% include 'partials/search_tab.html' with data=paginated_runways sort_by=sort_by tab_name="Runways" %}
+                        </div>
+    
+                        <!-- Countries -->
+                        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Countries' %}show active{% endif %}" 
+                            id="countries" 
+                            role="tabpanel" 
+                            aria-labelledby="countries-tab">
+                            {% include 'partials/search_tab.html' with data=paginated_countries sort_by=sort_by tab_name="Countries" %}
+                        </div>
+                        `;
+                        isExpanded = false;
+                        document.getElementById('searchNoQuery').removeAttribute('style');
+                    }
+                    else {
+                        
+                    }
+                }
 
             // const query = urlParams.get('query');
             // if (!query) {
