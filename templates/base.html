@@ -17,13 +17,6 @@
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
 
     <style>
-
-        
-
-        
-
-
-
         /* Search Box Styling (jangan pernah diganti) */
         .search-box {
             width: fit-content;
@@ -73,6 +66,48 @@
             transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
         }
         /*  */
+
+        .large-search-box .input-search {
+            height: 70px; /* Increased height */
+            width: 70px; /* Increased width */
+            border-style: none;
+            padding: 15px; /* Increased padding */
+            font-size: 24px; /* Increased font size */
+            letter-spacing: 2px;
+            outline: none;
+            border-radius: 35px; /* Adjusted border radius */
+            transition: all 0.5s ease-in-out;
+            background-color: #1e1e1e;
+            padding-right: 50px; /* Adjusted padding-right */
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .large-search-box .input-search::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 24px; /* Increased font size */
+            letter-spacing: 2px;
+            font-weight: 100;
+        }
+        .large-search-box .btn-search {
+            width: 70px; /* Increased width */
+            height: 70px; /* Increased height */
+            border-style: none;
+            font-size: 24px; /* Increased font size */
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            border-radius: 50%;
+            position: absolute;
+            right: 0px;
+            color: #a0a0a0;
+            background-color: transparent;
+        }
+        .large-search-box .input-search:focus {
+            width: 400px; /* Increased width */
+            border-radius: 0px;
+            background-color: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 500ms cubic-bezier(0, 0.110, 0.35, 2);
+        }
         
         /* Navbar Styling */
         .navbar {
@@ -133,7 +168,7 @@
         body {
             background-color: #1e1e1e; /* Dark gray */
             color: #e0e0e0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Comic Sans', sans-serif;
         }
 
         /* Floating Stack Styling */
@@ -502,7 +537,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">WorldTraCe</a>
+            <a class="navbar-brand" href="/">WorldTraCe</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -526,12 +561,8 @@
                 </ul>
 
                 <!-- Search Bar -->
-                <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
-                    <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                        <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
-                        <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
-                    </div>
-                </form>
+                <div id="searchNav"></div>
+                
             </div>
         </div>
     </nav>
@@ -554,7 +585,107 @@
 
     <!-- Scripts -->
     <script>
-        let isExpanded = false; // Track if the search bar is expanded
+        window.onload = noQuery();
+        function noQuery() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('query')) {
+                document.getElementById('resultsTabs').setAttribute('style', 'display: none; visibility: hidden;');
+                document.getElementById('resultsTabContent').setAttribute('style', 'display: none; visibility: hidden;');
+                document.getElementById('a').setAttribute('style', 'display: none;');
+                document.getElementById('b').setAttribute('style', 'display: none;');
+                document.getElementById('searchNoQuery').innerHTML = `
+                    <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
+                        <div class="search-box large-search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                            <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                            <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
+                        </div>
+                    </form>
+                    `;
+                    expandSearch();
+                    document.getElementById('searchNoQuery').setAttribute('style', 'display: flex; justify-content: center; align-items: center; height: 70vh; font-size: 3rem;');
+                    
+                }
+                else {
+                    document.getElementById('resultsTabs').innerHTML=`
+                    {% for tab, count in sorted_tabs %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
+                            id="{{ tab|lower }}-tab" 
+                            data-toggle="tab" 
+                            href="#{{ tab|lower }}" 
+                            role="tab" 
+                            aria-controls="{{ tab|lower }}" 
+                            aria-selected="{{ forloop.first }}">
+                                {{ tab }} 
+                                <span class="badge badge-primary">{{ count }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                    `;
+                    document.getElementById('resultsTabContent').innerHTML=`
+                     <!-- Airports -->
+                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Airports' %}show active{% endif %}" 
+                        id="airports" 
+                        role="tabpanel" 
+                        aria-labelledby="airports-tab">
+                        {% include 'partials/search_tab.html' with data=paginated_airports sort_by=sort_by tab_name="Airports" %}
+                    </div>
+
+                    <!-- Regions -->
+                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Regions' %}show active{% endif %}" 
+                        id="regions" 
+                        role="tabpanel" 
+                        aria-labelledby="regions-tab">
+                        {% include 'partials/search_tab.html' with data=paginated_regions sort_by=sort_by tab_name="Regions" %}
+                    </div>
+
+                    <!-- Navaids -->
+                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Navaids' %}show active{% endif %}" 
+                        id="navaids" 
+                        role="tabpanel" 
+                        aria-labelledby="navaids-tab">
+                        {% include 'partials/search_tab.html' with data=paginated_navaids sort_by=sort_by tab_name="Navaids" %}
+                    </div>
+
+                    <!-- Runways -->
+                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Runways' %}show active{% endif %}" 
+                        id="runways" 
+                        role="tabpanel" 
+                        aria-labelledby="runways-tab">
+                        {% include 'partials/search_tab.html' with data=paginated_runways sort_by=sort_by tab_name="Runways" %}
+                    </div>
+
+                    <!-- Countries -->
+                    <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Countries' %}show active{% endif %}" 
+                        id="countries" 
+                        role="tabpanel" 
+                        aria-labelledby="countries-tab">
+                        {% include 'partials/search_tab.html' with data=paginated_countries sort_by=sort_by tab_name="Countries" %}
+                    </div>
+                    `;
+                    document.getElementById('resultsTabs').setAttribute('style', 'display: block;');
+                    document.getElementById('resultsTabContent').setAttribute('style', 'display: block;');
+                    document.getElementById('a').setAttribute('style', 'display: block;');
+                    document.getElementById('b').setAttribute('style', 'display: block;');
+                    document.getElementById('searchNav').innerHTML = `
+                    <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
+                        <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                            <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                            <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
+                            </div>
+                            </form>
+                    `;
+                    isExpanded = false;
+                    document.getElementById('searchNoQuery').removeAttribute('style');
+                        }
+
+            // const query = urlParams.get('query');
+            // if (!query) {
+            //     alert('No query parameter found in the URL.');
+            // }
+        }
+
+        var isExpanded = false; // Track if the search bar is expanded
     
         function handleSearchClick() {
             const searchInput = document.getElementById('searchInput');

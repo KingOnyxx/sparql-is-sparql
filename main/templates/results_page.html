@@ -2,68 +2,14 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Search Results</h2>
-    <p>You searched for: <strong>{{ query }}</strong></p>
+    <h2 id="a">Search Results</h2>
+    <p id="b">You searched for: <strong>{{ query }}</strong></p>
 
     <!-- Tab Navigation -->
-    <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
-        {% for tab, count in sorted_tabs %}
-            <li class="nav-item">
-                <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
-                   id="{{ tab|lower }}-tab" 
-                   data-toggle="tab" 
-                   href="#{{ tab|lower }}" 
-                   role="tab" 
-                   aria-controls="{{ tab|lower }}" 
-                   aria-selected="{{ forloop.first }}">
-                    {{ tab }} 
-                    <span class="badge badge-primary">{{ count }}</span>
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    <div id="searchNoQuery"></div>
+    <ul class="nav nav-tabs" id="resultsTabs" role="tablist"></ul>
 
     <!-- Tab Content -->
-    <div class="tab-content mt-4" id="resultsTabContent">
-        <!-- Airports -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Airports' %}show active{% endif %}" 
-             id="airports" 
-             role="tabpanel" 
-             aria-labelledby="airports-tab">
-            {% include 'partials/search_tab.html' with data=paginated_airports sort_by=sort_by tab_name="Airports" %}
-        </div>
-
-        <!-- Regions -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Regions' %}show active{% endif %}" 
-             id="regions" 
-             role="tabpanel" 
-             aria-labelledby="regions-tab">
-            {% include 'partials/search_tab.html' with data=paginated_regions sort_by=sort_by tab_name="Regions" %}
-        </div>
-
-        <!-- Navaids -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Navaids' %}show active{% endif %}" 
-             id="navaids" 
-             role="tabpanel" 
-             aria-labelledby="navaids-tab">
-            {% include 'partials/search_tab.html' with data=paginated_navaids sort_by=sort_by tab_name="Navaids" %}
-        </div>
-
-        <!-- Runways -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Runways' %}show active{% endif %}" 
-             id="runways" 
-             role="tabpanel" 
-             aria-labelledby="runways-tab">
-            {% include 'partials/search_tab.html' with data=paginated_runways sort_by=sort_by tab_name="Runways" %}
-        </div>
-
-        <!-- Countries -->
-        <div class="tab-pane fade {% if sorted_tabs.0.0 == 'Countries' %}show active{% endif %}" 
-             id="countries" 
-             role="tabpanel" 
-             aria-labelledby="countries-tab">
-            {% include 'partials/search_tab.html' with data=paginated_countries sort_by=sort_by tab_name="Countries" %}
-        </div>
-    </div>
+    <div class="tab-content mt-4" id="resultsTabContent"></div>
 </div>
 {% endblock %}
