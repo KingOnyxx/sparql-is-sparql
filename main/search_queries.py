@@ -19,11 +19,19 @@ def search_queries(id, sparql):
             FILTER(CONTAINS(LCASE(?airport_label), "''' + id + '''"))
         }
         UNION
-        {
+        { 
             ?region rdf:type :region;
                     rdfs:label ?region_label .
-            FILTER(CONTAINS(LCASE(?region_label), "''' + id + '''"))
-        }
+            BIND(
+                IF(
+                    CONTAINS(LCASE(?region_label), "unassigned"),
+            		SUBSTR(STR(?region), 28),
+                    ?region_label
+                ) AS ?region_label_result
+            )
+            FILTER(CONTAINS(LCASE(?region_label_result), "''' + id + '''"))
+
+    }
         UNION
         {
             ?navaid rdf:type :navaid;
@@ -55,8 +63,8 @@ def search_queries(id, sparql):
 
     print(type(results))
 
-    if len(results["results"]["bindings"]) == 0:
-        raise ValueError("No results found for the given search keyword.")
+    # if len(results["results"]["bindings"]) == 0:
+    #     raise ValueError("No results found for the given search keyword.")
 
     # Initialize lists for results
     airports = []
@@ -77,7 +85,7 @@ def search_queries(id, sparql):
             airport_labels.append(result["airport_label"]["value"])
         if "region" in result:
             regions.append(result["region"]["value"])
-            region_labels.append(result["region_label"]["value"])
+            region_labels.append(result["region_label_result"]["value"])
         if "navaid" in result:
             navaids.append(result["navaid"]["value"])
             navaid_labels.append(result["navaid_label"]["value"])
