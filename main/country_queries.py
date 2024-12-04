@@ -79,10 +79,10 @@ def cotw_queries(country_code, sparql):
 
     # Execute the query
     results = sparql.query().convert()
-    print(results)
+    # print(results)
 
     if len(results["results"]["bindings"]) == 0:
-        raise ValueError(f"No data found for country ID: {country_code}")
+        return {"message": "No results found for country ID: {country_code}."}
 
     # Extract and store results
     result = results["results"]["bindings"][0]
@@ -165,54 +165,10 @@ def cotw_queries(country_code, sparql):
     final_result["regions_contained"] = regions_contained
     final_result["regions_contained_labels"] = regions_contained_labels
 
-    print(final_result['regions_contained'])
+    # print(final_result['regions_contained'])
     
 
     return final_result
-
-
-
-def country_queries(id, sparql):
-    print(type(id))
-    print(id)
-    final_result = dict()
-
-    # Set the SPARQL query
-    sparql.setQuery("""
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX v: <http://myairports.com/vocab#>
-
-    SELECT ?country ?label ?hasID ?partOf
-    WHERE {
-        ?country a v:country .
-            OPTIONAL{ ?country rdfs:label ?label .}
-            OPTIONAL{ ?country v:hasID ?hasID .}    
-            OPTIONAL{ ?country v:partOf ?partOf .}
-            FILTER()
-            FILTER(?country = :""" + id + """ )
-    }
-    """)
-
-    # Set the output format to JSON
-    sparql.setReturnFormat(JSON)
-
-    # Execute the query
-    results = sparql.query().convert()
-
-    print(type(results))
-
-
-    if (len(results["results"]["bindings"]) == 0):
-        raise ValueError
-
-    result = results["results"]["bindings"][0]
-
-    for key in result.keys():
-        final_result[key] = result[key]["value"]
-    
-    return(final_result)
 
 
 def get_all_countries(sparql):

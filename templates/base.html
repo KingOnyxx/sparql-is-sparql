@@ -585,97 +585,109 @@
 
     <!-- Scripts -->
     <script>
-        window.onload = noQuery();
-        function noQuery() {
-    const url = window.location;
-    const urlParams = new URLSearchParams(url.search);
-
-    // Check if there is a query or if we are at the root path
-    if (url.pathname === '/' && !urlParams.has('query')) {
-        // Hide elements for no query
-        document.getElementById('resultsTabs').setAttribute('style', 'display: none; visibility: hidden;');
-        document.getElementById('resultsTabContent').setAttribute('style', 'display: none; visibility: hidden;');
-        document.getElementById('a').setAttribute('style', 'display: none;');
-        document.getElementById('b').setAttribute('style', 'display: none;');
-        document.getElementById('searchNoQuery').innerHTML = `
-            <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
-                <div class="search-box large-search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
-                    <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
-                </div>
-            </form>
-        `;
-        expandSearch();
-        document.getElementById('searchNoQuery').setAttribute('style', 'display: flex; justify-content: center; align-items: center; height: 70vh; font-size: 3rem;');
-    } else {
-        // Show elements for results
-        document.getElementById('searchNav').innerHTML = `
-            <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
-                <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
-                    <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
-                </div>
-            </form>
-        `;
-        if (url.pathname == '/'){
-            document.getElementById('resultsTabs').setAttribute('style', 'display: block;');
-            document.getElementById('resultsTabContent').setAttribute('style', 'display: block;');
-            document.getElementById('a').setAttribute('style', 'display: block;');
-            document.getElementById('b').setAttribute('style', 'display: block;');
-            // Render the tabs dynamically
-            const tabsHtml = `
-                <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
-                    {% for tab, count in sorted_tabs %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
-                            id="{{ tab|lower }}-tab" 
-                            data-toggle="tab" 
-                            href="#{{ tab|lower }}" 
-                            role="tab" 
-                            aria-controls="{{ tab|lower }}" 
-                            aria-selected="{{ forloop.first }}">
-                                {{ tab }} 
-                                <span class="badge badge-primary">{{ count }}</span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            `;
-            document.getElementById('resultsTabs').innerHTML = tabsHtml;
-    
-            // Render the tab content dynamically
-            const tabsContentHtml = `
-                {% for tab, count in sorted_tabs %}
-                    <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
-                         id="{{ tab|lower }}" 
-                         role="tabpanel" 
-                         aria-labelledby="{{ tab|lower }}-tab">
-                        {% if tab == "Airports" %}
-                            {% include 'partials/search_tab.html' with data=paginated_airports pagination_range=airport_pagination_range sort_by=sort_by tab_name="Airports" %}
-                        {% elif tab == "Regions" %}
-                            {% include 'partials/search_tab.html' with data=paginated_regions pagination_range=region_pagination_range sort_by=sort_by tab_name="Regions" %}
-                        {% elif tab == "Navaids" %}
-                            {% include 'partials/search_tab.html' with data=paginated_navaids pagination_range=navaid_pagination_range sort_by=sort_by tab_name="Navaids" %}
-                        {% elif tab == "Runways" %}
-                            {% include 'partials/search_tab.html' with data=paginated_runways pagination_range=runway_pagination_range sort_by=sort_by tab_name="Runways" %}
-                        {% elif tab == "Countries" %}
-                            {% include 'partials/search_tab.html' with data=paginated_countries pagination_range=country_pagination_range sort_by=sort_by tab_name="Countries" %}
-                        {% else %}
-                            <p>No results available for {{ tab }}.</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                `;
-                isExpanded = false;
-                document.getElementById('searchNoQuery').removeAttribute('style');
-            document.getElementById('resultsTabContent').innerHTML = tabsContentHtml;
-            
-            // Adjust search bar in navbar
+        window.onload = function() {
+            noQuery();
+            handlePageChange();
         }
 
-        
-    }
-}
+
+        function noQuery() {
+            const url = window.location;
+            const urlParams = new URLSearchParams(url.search);
+            var isExist = "{{ exist|escapejs }}";
+
+            // Check if there is a query or if we are at the root path
+            if (url.pathname === '/' && !urlParams.has('query')) {
+                // Hide elements for no query
+                document.getElementById('resultsTabs').setAttribute('style', 'display: none; visibility: hidden;');
+                document.getElementById('resultsTabContent').setAttribute('style', 'display: none; visibility: hidden;');
+                document.getElementById('a').setAttribute('style', 'display: none;');
+                document.getElementById('b').setAttribute('style', 'display: none;');
+                document.getElementById('searchNoQuery').innerHTML = `
+                    <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
+                        <div class="search-box large-search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                            <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                            <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
+                        </div>
+                    </form>
+                `;
+                expandSearch();
+                document.getElementById('searchNoQuery').setAttribute('style', 'display: flex; justify-content: center; align-items: center; height: 70vh; font-size: 3rem;');
+            } else {
+                // Show elements for results
+                document.getElementById('searchNav').innerHTML = `
+                    <form class="form-inline" method="get" action="{% url 'results_view' %}" id="searchForm">
+                        <div class="search-box" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                            <button class="btn-search" type="button" onclick="handleSearchClick()"><i class="fa fa-search"></i></button>
+                            <input type="text" class="input-search" placeholder="Type to Search..." name="query" id="searchInput" value="{{ request.GET.query }}">
+                        </div>
+                    </form>
+                `;
+                if (url.pathname == '/'){
+                    console.log(isExist);
+                    if (isExist === 'True') { // condition when query contains results
+                        document.getElementById('resultsTabs').setAttribute('style', 'display: block;');
+                        document.getElementById('resultsTabContent').setAttribute('style', 'display: block;');
+                        document.getElementById('a').setAttribute('style', 'display: block;');
+                        document.getElementById('b').setAttribute('style', 'display: block;');
+                        // Render the tabs dynamically
+                        const tabsHtml = `
+                            <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
+                                {% for tab, count in sorted_tabs %}
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if forloop.first %}active{% endif %} {% if count == 0 %}disabled{% endif %}" 
+                                        id="{{ tab|lower }}-tab" 
+                                        data-toggle="tab" 
+                                        href="#{{ tab|lower }}" 
+                                        role="tab" 
+                                        aria-controls="{{ tab|lower }}" 
+                                        aria-selected="{{ forloop.first }}">
+                                            {{ tab }} 
+                                            <span class="badge badge-primary">{{ count }}</span>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        `;
+                        document.getElementById('resultsTabs').innerHTML = tabsHtml;
+                
+                        // Render the tab content dynamically
+                        const tabsContentHtml = `
+                            {% for tab, count in sorted_tabs %}
+                                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                                    id="{{ tab|lower }}" 
+                                    role="tabpanel" 
+                                    aria-labelledby="{{ tab|lower }}-tab">
+                                    {% if tab == "Airports" %}
+                                        {% include 'partials/search_tab.html' with data=paginated_airports pagination_range=airport_pagination_range sort_by=sort_by tab_name="Airports" %}
+                                    {% elif tab == "Regions" %}
+                                        {% include 'partials/search_tab.html' with data=paginated_regions pagination_range=region_pagination_range sort_by=sort_by tab_name="Regions" %}
+                                    {% elif tab == "Navaids" %}
+                                        {% include 'partials/search_tab.html' with data=paginated_navaids pagination_range=navaid_pagination_range sort_by=sort_by tab_name="Navaids" %}
+                                    {% elif tab == "Runways" %}
+                                        {% include 'partials/search_tab.html' with data=paginated_runways pagination_range=runway_pagination_range sort_by=sort_by tab_name="Runways" %}
+                                    {% elif tab == "Countries" %}
+                                        {% include 'partials/search_tab.html' with data=paginated_countries pagination_range=country_pagination_range sort_by=sort_by tab_name="Countries" %}
+                                    {% else %}
+                                        <p>No results available for {{ tab }}.</p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            `;
+                            isExpanded = false;
+                            document.getElementById('searchNoQuery').removeAttribute('style');
+                        document.getElementById('resultsTabContent').innerHTML = tabsContentHtml;
+                        
+                    } else {
+                        document.getElementById('searchNoQuery').innerHTML = `
+                            <h2>{{ message }}</h2>
+                        `;
+                        document.getElementById('searchNoQuery').setAttribute('style', 'display: flex; justify-content: center; align-items: center; height: 50vh; font-size: 3rem;');
+                    }
+                    // Adjust search bar in navbar
+                }
+            }
+        }
 
     
         function handleSearchClick() {
@@ -719,6 +731,28 @@
                 isExpanded = false;
             }
         });
+    </script>
+
+    <script>
+        function handlePageChange() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('airports_page')) {
+                const tab = document.getElementById('airports-tab');
+                tab.click();
+            } else if (urlParams.has('navaids_page')) {
+                const tab = document.getElementById('navaids-tab');
+                tab.click();
+            } else if (urlParams.has('regions_page')) {
+                const tab = document.getElementById('regions-tab');
+                tab.click();
+            } else if (urlParams.has('countries_page')) {
+                const tab = document.getElementById('countries-tab');
+                tab.click();
+            } else if (urlParams.has('runways_page')) {
+                const tab = document.getElementById('runways-tab');
+                tab.click();
+            }
+        }
     </script>
     
     

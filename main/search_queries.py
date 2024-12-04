@@ -61,10 +61,10 @@ def search_queries(id, sparql):
     # Execute the query
     results = sparql.query().convert()
 
-    print(type(results))
+    # print(type(results))
 
-    # if len(results["results"]["bindings"]) == 0:
-    #     raise ValueError("No results found for the given search keyword.")
+    if len(results["results"]["bindings"]) == 0:
+        return {"message": "No results found for the given search keyword."}
 
     # Initialize lists for results
     airports = []

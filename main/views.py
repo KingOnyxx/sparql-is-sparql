@@ -57,6 +57,14 @@ def results_view(request):
     # Fetch search results
     result = search_queries(query, SPARQL)
 
+    if "message" in result:
+        return render(request, 'results_page.html', {
+            'query': query,
+            'message': result["message"],
+            'exist': False,
+            'page': {'title': 'Search Results'},
+        })
+
     # Prepare results
     def extract_data(items, labels):
         return list(zip(
@@ -95,11 +103,12 @@ def results_view(request):
     # Sort tabs by result count
     sorted_tabs = sorted(result_counts.items(), key=lambda x: x[1], reverse=True)
 
-    print(paginated_airports, airport_pagination_range)
+    # print(paginated_airports, airport_pagination_range)
 
 
     return render(request, 'results_page.html', {
         'query': query,
+        'exist': True,
         'paginated_airports': paginated_airports,
         'airport_pagination_range': airport_pagination_range,
         'paginated_regions': paginated_regions,
@@ -179,7 +188,7 @@ def airport_view(request, airport_id):
             "items": [
                 ("Scheduled Service", airport_data["scheduled_service"], "🗓️"),
                 ("Municipality", airport_data["municipality_label"], "🏙️"),
-                ("Region", f'<a href="{region_url}" class="highlighted-cell">{airport_data["region_label"]}</a>' if region_url else "N/A", "📍"),
+                ("Region", f'<a href="{region_url}" class="highlighted-cell">{airport_data["region_label"].replace('_',' ')}</a>' if region_url else "N/A", "📍"),
                 ("Country", f'<a href="{country_url}" class="highlighted-cell">{airport_data["country_label"]}</a>' if country_url else "N/A", "🌍"),
                 ("Continent", airport_data["continent"], "🌎"),
             ]
@@ -355,7 +364,7 @@ def country_view(request, iso_country):
 
     # Prepare region data
     region_data = [
-        {"label": label, "id": region.split("/")[-1]}
+        {"label": label.replace('_',' '), "id": region.split("/")[-1]}
         for label, region in zip(result.get("regions_contained_labels", []), result.get("regions_contained", []))
     ]
 
