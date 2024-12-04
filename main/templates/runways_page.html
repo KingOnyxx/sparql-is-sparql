@@ -5,7 +5,16 @@
     <h2>Runway Details: {{ runway_data.id }}</h2>
     <table class="table">
         <tr><th>ID</th><td>{{ runway_data.id }}</td></tr>
-        <tr><th>Airport</th><td><a href="{% url 'airport_details' airport_id=runway_data.airport %}" class="highlighted-cell">{{ runway_data.airport_label }}</a></td></tr>
+        <tr><th>Airport</th>
+            <td>
+                {% if runway_data.airport %}
+                    <a href="{% url 'airport_details' airport_id=runway_data.airport %}" class="highlighted-cell">
+                        {{ runway_data.airport_label }}
+                    </a>
+                {% else %}
+                    {{ runway_data.airport_label }}
+                {% endif %}
+            </td></tr>
         <tr><th>Length (ft)</th><td>{{ runway_data.length_ft }}</td></tr>
         <tr><th>Width (ft)</th><td>{{ runway_data.width_ft }}</td></tr>
         <tr><th>Surface</th><td>{{ runway_data.surface }}</td></tr>
