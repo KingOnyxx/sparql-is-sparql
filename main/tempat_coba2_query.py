@@ -9,7 +9,7 @@ sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 final_result=dict()
 # Set the SPARQL query
 id = "Dubai_Emirate"
-# print(type(id))
+print(type(id))
 sparql.setQuery("""
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX v: <http://myairports.com/vocab#>
@@ -36,7 +36,7 @@ sparql.setReturnFormat(JSON)
 # Execute the query
 results = sparql.query().convert()
 
-# print(type(results))
+print(type(results))
 
 
 if (len(results["results"]["bindings"]) == 0):
@@ -47,7 +47,7 @@ result = results["results"]["bindings"][0]
 for key in result.keys():
     final_result[key] = result[key]["value"]
 
-# print(final_result)
+print(final_result)
 
 
 

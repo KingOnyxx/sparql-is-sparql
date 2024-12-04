@@ -1,8 +1,8 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 def search_queries(id, sparql):
-    # # print(type(id))
-    # # print(id)
+    print(type(id))
+    print(id)
     final_result = dict()
 
     # Set the SPARQL query
@@ -53,7 +53,7 @@ def search_queries(id, sparql):
     # Execute the query
     results = sparql.query().convert()
 
-    # print(type(results))
+    print(type(results))
 
     if len(results["results"]["bindings"]) == 0:
         raise ValueError("No results found for the given search keyword.")
@@ -85,8 +85,13 @@ def search_queries(id, sparql):
             runways.append(result["runway"]["value"])
             runway_labels.append(result["runway_label"]["value"])
         if "country" in result:
+            # iso_country = result["country"]["value"]
             countries.append(result["country"]["value"])
             country_labels.append(result["country_label"]["value"])
+        if "label2" in result:
+            if result["country_label"]["value"] != result["label2"]["value"]:
+                countries.append(result["code"]["value"])
+                country_labels.append(result["label2"]["value"])
 
     # Populate the final result dictionary
     final_result["airports"] = airports

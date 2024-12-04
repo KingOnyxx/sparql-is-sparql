@@ -94,7 +94,7 @@ def results_view(request):
     # Sort tabs by result count
     sorted_tabs = sorted(result_counts.items(), key=lambda x: x[1], reverse=True)
 
-    # print(paginated_airports, airport_pagination_range)
+    print(paginated_airports, airport_pagination_range)
 
 
     return render(request, 'results_page.html', {
@@ -209,7 +209,7 @@ def airport_view(request, airport_id):
 
 def navaid_view(request, navaid_id):
     result = navaid_queries(navaid_id, SPARQL)
-    # # print(result)
+    # print(result)
     # Example data for a navaid
     
     navaid_data = {

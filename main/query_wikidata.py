@@ -21,8 +21,8 @@ if response.status_code == 200:
     data = response.json()  # Parse the response as JSON
     if data['results']['bindings']:
         iso_code = data['results']['bindings'][0]['isoCode']['value']
-        # print(f"ISO 2-digit code for Brunei: {iso_code}")
+        print(f"ISO 2-digit code for Brunei: {iso_code}")
     else:
-        # print("No result found for Brunei.")
+        print("No result found for Brunei.")
 else:
-    # print(f"Error: {response.status_code}")
+    print(f"Error: {response.status_code}")

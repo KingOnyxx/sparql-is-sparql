@@ -1,8 +1,8 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 def runway_queries(id, sparql):
-    # print(type(id))
-    # print(id)
+    print(type(id))
+    print(id)
     final_result = dict()
 
     # Set the SPARQL query
@@ -33,7 +33,7 @@ SELECT * WHERE {
     # Execute the query
     results = sparql.query().convert()
 
-    # print(type(results))
+    print(type(results))
 
 
     if (len(results["results"]["bindings"]) == 0):

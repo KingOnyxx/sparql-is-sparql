@@ -162,7 +162,7 @@ def cotw_queries(country_code, sparql):
     final_result["regions_contained"] = regions_contained
     final_result["regions_contained_labels"] = regions_contained_labels
 
-    # print(final_result['regions_contained'])
+    print(final_result['regions_contained'])
     
 
     return final_result
@@ -170,8 +170,8 @@ def cotw_queries(country_code, sparql):
 
 
 def country_queries(id, sparql):
-    # print(type(id))
-    # print(id)
+    print(type(id))
+    print(id)
     final_result = dict()
 
     # Set the SPARQL query
@@ -198,7 +198,7 @@ def country_queries(id, sparql):
     # Execute the query
     results = sparql.query().convert()
 
-    # print(type(results))
+    print(type(results))
 
 
     if (len(results["results"]["bindings"]) == 0):
