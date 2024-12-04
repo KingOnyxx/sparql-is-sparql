@@ -7,41 +7,44 @@ def search_queries(id, sparql):
 
     # Set the SPARQL query
     sparql.setQuery('''
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX : <http://myairports.com/data/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX : <http://myairports.com/data/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX v: <http://myairports.com/data/>
 
-SELECT * WHERE {{
-    {
-        ?airport rdf:type :airport;
-                rdfs:label ?airport_label .
-        FILTER(CONTAINS(LCASE(?airport_label), "''' + id + '''"))
-    }
-    UNION
-    {
-        ?region rdf:type :region;
-                rdfs:label ?region_label .
-        FILTER(CONTAINS(LCASE(?region_label), "''' + id + '''"))
-    }
-    UNION
-    {
-        ?navaid rdf:type :navaid;
-                rdfs:label ?navaid_label .
-        FILTER(CONTAINS(LCASE(?navaid_label), "''' + id + '''"))
-    }
-    UNION
-    {
-        ?runway rdf:type :Runway;
-                rdfs:label ?runway_label .
-        FILTER(CONTAINS(LCASE(?runway_label), "''' + id + '''"))
-    }
-    UNION
-    {
-        ?country rdf:type :country;
-                rdfs:label ?country_label .
-        FILTER(CONTAINS(LCASE(?country_label), "''' + id + '''"))
-    }
-}}
+    SELECT * WHERE {{
+        {
+            ?airport rdf:type :airport;
+                    rdfs:label ?airport_label .
+            FILTER(CONTAINS(LCASE(?airport_label), "''' + id + '''"))
+        }
+        UNION
+        {
+            ?region rdf:type :region;
+                    rdfs:label ?region_label .
+            FILTER(CONTAINS(LCASE(?region_label), "''' + id + '''"))
+        }
+        UNION
+        {
+            ?navaid rdf:type :navaid;
+                    rdfs:label ?navaid_label .
+            FILTER(CONTAINS(LCASE(?navaid_label), "''' + id + '''"))
+        }
+        UNION
+        {
+            ?runway rdf:type :Runway;
+                    rdfs:label ?runway_label .
+            FILTER(CONTAINS(LCASE(?runway_label), "''' + id + '''"))
+        }
+        UNION
+        {
+            ?country rdf:type v:country;
+                    rdfs:label ?country_label .
+            ?code v:isoHasLabel ?label2 .
+            FILTER(?country = ?code) .
+            FILTER(CONTAINS(LCASE(?country_label), "''' + id + '''"))
+        }
+    }}
     ''')
 
     # Set the output format to JSON
@@ -62,7 +65,7 @@ SELECT * WHERE {{
     region_labels = []
     navaids = []
     navaid_labels = []
-    runways =[]
+    runways = []
     runway_labels = []
     countries = []
     country_labels = []
@@ -82,8 +85,13 @@ SELECT * WHERE {{
             runways.append(result["runway"]["value"])
             runway_labels.append(result["runway_label"]["value"])
         if "country" in result:
+            # iso_country = result["country"]["value"]
             countries.append(result["country"]["value"])
             country_labels.append(result["country_label"]["value"])
+        if "label2" in result:
+            if result["country_label"]["value"] != result["label2"]["value"]:
+                countries.append(result["code"]["value"])
+                country_labels.append(result["label2"]["value"])
 
     # Populate the final result dictionary
     final_result["airports"] = airports

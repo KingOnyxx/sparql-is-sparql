@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 
 SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+# SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 from django.core.paginator import Paginator
@@ -289,7 +290,7 @@ def country_view(request, iso_country):
         'deathrate': result.get("Deathrate", ""),
         'agriculture': result.get("AgricultureRatio", ""),
         'industry': result.get("IndustryRatio", ""),
-        'service': result.get("ServiceRatio", "")
+        'service': result.get("ServiceRatio", ""), 
     }
 
     # Define general information groups
