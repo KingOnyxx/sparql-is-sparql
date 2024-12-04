@@ -68,7 +68,7 @@ def cotw_queries(country_code, sparql):
         OPTIONAL {{?country v:hasServiceRatio ?ServiceRatio . }}
         OPTIONAL {{?country v:label ?label . }}
 
-        FILTER(?code = c:{country_code}).
+        FILTER(?code = v:{country_code}).
         FILTER(?label = CONCAT(?label2, " ")).
         
         }}
@@ -79,6 +79,7 @@ def cotw_queries(country_code, sparql):
 
     # Execute the query
     results = sparql.query().convert()
+    print(results)
 
     if len(results["results"]["bindings"]) == 0:
         raise ValueError(f"No data found for country ID: {country_code}")
@@ -87,6 +88,8 @@ def cotw_queries(country_code, sparql):
     result = results["results"]["bindings"][0]
     for key in result.keys():
         final_result[key] = result[key]["value"]
+
+
 
 
     ##########################################################################
