@@ -27,7 +27,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 #     # Execute the query
 #     results = sparql.query().convert()
 
-#     print(type(results))
+#     # print(type(results))
 
 
 #     if (len(results["results"]["bindings"]) == 0):
@@ -41,8 +41,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 #     return(final_result)
 
 def region_queries(id, sparql):
-    print(type(id))
-    print(id)
+    # print(type(id))
+    # print(id)
     final_result = dict()
 
     # Set the SPARQL query
@@ -77,7 +77,7 @@ def region_queries(id, sparql):
     # Execute the query
     results = sparql.query().convert()
 
-    print(type(results))
+    # print(type(results))
 
 
     if (len(results["results"]["bindings"]) == 0):

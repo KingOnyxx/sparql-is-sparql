@@ -40,12 +40,12 @@ def cotw_queries(country_code, sparql):
     PREFIX c: <http://example.org/countries/>
     PREFIX v: <http://myairports.com/data/>
     PREFIX va: <http://myairports.com/vocab#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-    SELECT DISTINCT * WHERE {{
+    select * where {{
+        ?code v:isoHasLabel ?label2 .
+
         ?country v:isPartOfRegion ?type .
-                    
-        ?code rdfs:label ?countryLabel2 .
-        ?code va:partOf ?continentCode .  
 
         OPTIONAL {{?country v:isPartOfRegion ?Region . }} 
         OPTIONAL {{?country v:hasPopulation ?Population . }} 
@@ -68,10 +68,10 @@ def cotw_queries(country_code, sparql):
         OPTIONAL {{?country v:hasServiceRatio ?ServiceRatio . }}
         OPTIONAL {{?country v:label ?label . }}
 
-        FILTER(?code = v:{country_code}).
-        FILTER(?label = (CONCAT(?countryLabel2, " "))).
-        FILTER(isLITERAL(?continentCode)).
-    }}
+        FILTER(?code = c:{country_code}).
+        FILTER(?label = CONCAT(?label2, " ")).
+        
+        }}
     """)
 
     # Set the output format to JSON
@@ -162,7 +162,7 @@ def cotw_queries(country_code, sparql):
     final_result["regions_contained"] = regions_contained
     final_result["regions_contained_labels"] = regions_contained_labels
 
-    print(final_result['regions_contained'])
+    # print(final_result['regions_contained'])
     
 
     return final_result
@@ -170,8 +170,8 @@ def cotw_queries(country_code, sparql):
 
 
 def country_queries(id, sparql):
-    print(type(id))
-    print(id)
+    # print(type(id))
+    # print(id)
     final_result = dict()
 
     # Set the SPARQL query
@@ -198,7 +198,7 @@ def country_queries(id, sparql):
     # Execute the query
     results = sparql.query().convert()
 
-    print(type(results))
+    # print(type(results))
 
 
     if (len(results["results"]["bindings"]) == 0):
@@ -216,22 +216,15 @@ def get_all_countries(sparql):
     final_result = dict()
 
     sparql.setQuery("""
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX c: <http://example.org/countries/>
-    PREFIX v: <http://myairports.com/data/>
-    PREFIX va: <http://myairports.com/vocab#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX c: <http://example.org/countries/>
+        PREFIX v: <http://myairports.com/data/>
+        PREFIX va: <http://myairports.com/vocab#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    SELECT DISTINCT * WHERE {
-                   
-    ?code rdfs:label ?countryLabel .
-    ?code rdf:type va:country.
-                    
-    ?country v:label ?CountryLabel2 . 
-    
-    filter(?CountryLabel2 = CONCAT(?countryLabel, " ")) .
-        
-    } 
+        select * where {
+            ?code v:isoHasLabel ?label .
+        } 
     """)
 
     # Set the output format to JSON
@@ -245,7 +238,7 @@ def get_all_countries(sparql):
 
     for result in results["results"]["bindings"]:
         countries_code.append(result["code"]["value"])
-        countries_labels.append(result["countryLabel"]["value"])
+        countries_labels.append(result["label"]["value"])
 
     final_result["countries_code"] = countries_code
     final_result["countries_labels"] = countries_labels
