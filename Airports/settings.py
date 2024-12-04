@@ -25,9 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-jl%!q!=_i+9(+g%f5&cc7=nefq8sa$o)1_w4cockuhmv99u=3+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+PRODUCTION = os.getenv("PRODUCTION", False)
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1",
+                 ".pbp.cs.ui.ac.id", ".railway.app", ".up.railway.app"]
 
 
 # Application definition
@@ -52,6 +54,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SECURE = True
 
 ROOT_URLCONF = 'Airports.urls'
 
@@ -124,9 +130,12 @@ STATIC_URL = '/static/'
 
 # In development, you can use the following to serve static files during development:
 # This is usually handled automatically by Django's development server (runserver)
-STATICFILES_DIRS = [
-    BASE_DIR / "main/static",  # Add this line if you're using global static files
-]
+if DEBUG is True:
+    STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static') # merujuk ke /static root project pada mode development
+    ]
+else:
+  STATIC_ROOT = os.path.join(BASE_DIR, 'static') # merujuk ke /static root project pada mode production
 
 # In production, ensure you have these set:
 # STATIC_ROOT = BASE_DIR / "staticfiles"
