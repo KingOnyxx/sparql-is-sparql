@@ -143,8 +143,15 @@ def cotw_queries(country_code, sparql):
 
     select * where {{
         ?regionId va:partOf ?isoCountry.
-        ?regionId rdfs:label ?regionName.
         ?regionId va:hasLocalCode ?code.
+        ?regionId rdfs:label ?region_label .
+            BIND(
+                IF(
+                    CONTAINS(LCASE(?region_label), "unassigned"),
+            		SUBSTR(STR(?regionId), 28),
+                    ?region_label
+                ) AS ?region_label_result
+            )
         
         FILTER(?isoCountry = v:{country_code})
     }}
@@ -157,7 +164,6 @@ def cotw_queries(country_code, sparql):
 
     regions_contained = []
     regions_contained_labels = []
-
     for result in results["results"]["bindings"]:
         regions_contained.append(result["regionId"]["value"])
         # print(result["region_label_result"]["value"])

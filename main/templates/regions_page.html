@@ -2,7 +2,11 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Region Details: {{ region_data.name }}</h2>
+    {% if region_data.name == "(unassigned)" %}
+        <h2>Region Details: {{ region_data.id }}</h2>
+    {% else %}
+        <h2>Region Details: {{ region_data.name }}</h2>
+    {% endif %}
 
     <!-- Grouped Cards -->
     {% for group in region_info_groups %}
