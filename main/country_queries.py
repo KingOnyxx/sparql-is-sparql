@@ -183,6 +183,7 @@ def get_all_countries(sparql):
 
         select * where {
             ?code v:isoHasLabel ?label .
+            FILTER(STRSTARTS(STR(?code), STR(v:))) . 
         } 
     """)
 
