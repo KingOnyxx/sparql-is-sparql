@@ -9,9 +9,13 @@ from .search_queries import search_queries
 from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from Airports.settings import URL
 
-SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
 # SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
+
+SPARQL = SPARQLWrapper(URL)
+
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 from django.core.paginator import Paginator
@@ -317,7 +321,6 @@ def country_view(request, iso_country):
     else:
         country_data["climate"] = "-"
     
-    print(country_data["agriculture"])
     if country_data["agriculture"] != "":
         country_data["agriculture"] = str(100 * float(country_data["agriculture"]))[:4]
     else:    

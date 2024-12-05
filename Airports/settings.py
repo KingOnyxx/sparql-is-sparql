@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-jl%!q!=_i+9(+g%f5&cc7=nefq8sa$o)1_w4cockuhmv99u=3+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 PRODUCTION = os.getenv("PRODUCTION", False)
-DEBUG = True
+DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1",
                  ".pbp.cs.ui.ac.id", ".railway.app", ".up.railway.app",".vercel.app"]
@@ -131,10 +131,12 @@ STATIC_URL = '/static/'
 # In development, you can use the following to serve static files during development:
 # This is usually handled automatically by Django's development server (runserver)
 if DEBUG is True:
+    URL = "http://localhost:7200/repositories/airports"
     STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static') # merujuk ke /static root project pada mode development
     ]
 else:
+  URL = "http://34.50.87.161:7200/repositories/airports"
   STATIC_ROOT = os.path.join(BASE_DIR, 'static') # merujuk ke /static root project pada mode production
 
 # In production, ensure you have these set:
