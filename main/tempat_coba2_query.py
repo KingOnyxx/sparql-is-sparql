@@ -2,31 +2,62 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 # GraphDB SPARQL endpoint
 # punya joel
-sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
+# sparql = SPARQLWrapper("http://DESKTOP-V5G8723:7200/repositories/airports")
 
 # punya adrial
 # sparql = SPARQLWrapper("http://DESKTOP-CMK0990:7200/repositories/airport")
+sparql = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
 final_result=dict()
 # Set the SPARQL query
-id = "Dubai_Emirate"
-print(type(id))
+# id = "Dubai_Emirate"
+# print(type(id))
 sparql.setQuery("""
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX v: <http://myairports.com/vocab#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX : <http://myairports.com/data/>
-                
-SELECT ?region ?label ?hasID ?hasLocalCode ?partOf
-WHERE {
-    ?region rdf:type :region .
-    OPTIONAL { ?region rdfs:label ?label . }
-    OPTIONAL { ?region v:hasID ?hasID . }
-    OPTIONAL { ?region v:hasLocalCode ?hasLocalCode . }
-    OPTIONAL { ?region v:partOf ?partOf . }
-    FILTER(?label = \"""" + id + """\")
-}
-LIMIT 100
+    PREFIX : <http://myairports.com/data/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX v: <http://myairports.com/data/>
+
+    SELECT * WHERE {{
+        {
+            ?airport rdf:type :airport;
+                    rdfs:label ?airport_label .
+            FILTER(CONTAINS(LCASE(?airport_label), "''' + id + '''"))
+        }
+        UNION
+        { 
+            ?region rdf:type :region;
+                    rdfs:label ?region_label .
+            BIND(
+                IF(
+                    CONTAINS(LCASE(?region_label), "unassigned"),
+            		SUBSTR(STR(?region), 28),
+                    ?region_label
+                ) AS ?region_label_result
+            )
+            FILTER(CONTAINS(LCASE(?region_label_result), "''' + id + '''"))
+
+    }
+        UNION
+        {
+            ?navaid rdf:type :navaid;
+                    rdfs:label ?navaid_label .
+            FILTER(CONTAINS(LCASE(?navaid_label), "''' + id + '''"))
+        }
+        UNION
+        {
+            ?runway rdf:type :Runway;
+                    rdfs:label ?runway_label .
+            FILTER(CONTAINS(LCASE(?runway_label), "''' + id + '''"))
+        }
+        UNION
+        {
+            ?country rdf:type v:country;
+                    rdfs:label ?country_label .
+            ?code v:isoHasLabel ?label2 .
+            FILTER(?country = ?code) .
+            FILTER(CONTAINS(LCASE(?country_label), "''' + id + '''"))
+        }
+    }}
 """)
 
 
@@ -36,7 +67,7 @@ sparql.setReturnFormat(JSON)
 # Execute the query
 results = sparql.query().convert()
 
-print(type(results))
+# print(type(results))
 
 
 if (len(results["results"]["bindings"]) == 0):

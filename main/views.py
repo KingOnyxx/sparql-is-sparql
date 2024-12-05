@@ -10,8 +10,8 @@ from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
-SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
-# SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
+# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 from django.core.paginator import Paginator
@@ -188,7 +188,7 @@ def airport_view(request, airport_id):
             "items": [
                 ("Scheduled Service", airport_data["scheduled_service"], "🗓️"),
                 ("Municipality", airport_data["municipality_label"], "🏙️"),
-                ("Region", f'<a href="{region_url}" class="highlighted-cell">{airport_data["region_label"].replace('_',' ')}</a>' if region_url else "N/A", "📍"),
+                ("Region", f'<a href="{region_url}" class="highlighted-cell">{airport_data["region_label"].replace("_"," ")}</a>' if region_url else "N/A", "📍"),
                 ("Country", f'<a href="{country_url}" class="highlighted-cell">{airport_data["country_label"]}</a>' if country_url else "N/A", "🌍"),
                 ("Continent", airport_data["continent"], "🌎"),
             ]
