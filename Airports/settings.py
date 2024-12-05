@@ -29,7 +29,7 @@ PRODUCTION = os.getenv("PRODUCTION", False)
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1",
-                 ".pbp.cs.ui.ac.id", ".railway.app", ".up.railway.app"]
+                 ".pbp.cs.ui.ac.id", ".railway.app", ".up.railway.app",".vercel.app"]
 
 
 # Application definition

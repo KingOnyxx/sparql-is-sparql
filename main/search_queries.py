@@ -1,8 +1,8 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 def search_queries(id, sparql):
-    # print(type(id))
-    # print(id)
+    print(type(id))
+    print(id)
     final_result = dict()
 
     # Set the SPARQL query

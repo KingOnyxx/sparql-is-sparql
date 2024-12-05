@@ -28,6 +28,7 @@ def region_queries(id, sparql):
         FILTER(isIRI(?country))
         FILTER(?region = :""" + id + """)
     }
+    LIMIT 100
     """)
 
     # Set the output format to JSON
