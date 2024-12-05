@@ -160,7 +160,8 @@ def cotw_queries(country_code, sparql):
 
     for result in results["results"]["bindings"]:
         regions_contained.append(result["regionId"]["value"])
-        regions_contained_labels.append(result["regionName"]["value"])
+        # print(result["region_label_result"]["value"])
+        regions_contained_labels.append(result["region_label_result"]["value"])
 
     final_result["regions_contained"] = regions_contained
     final_result["regions_contained_labels"] = regions_contained_labels

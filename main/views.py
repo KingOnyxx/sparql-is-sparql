@@ -10,8 +10,8 @@ from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
-# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
-SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
+SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+# SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 from django.core.paginator import Paginator
@@ -301,6 +301,7 @@ def country_view(request, iso_country):
         'industry': result.get("IndustryRatio", ""),
         'service': result.get("ServiceRatio", ""), 
     }
+
     if country_data["climate"] == "1":
         country_data["climate"] = "Tropical"
     elif country_data["climate"] == "1.5":
@@ -315,7 +316,20 @@ def country_view(request, iso_country):
         country_data["climate"] = "Continental (cold)"
     else:
         country_data["climate"] = "-"
-
+    
+    print(country_data["agriculture"])
+    if country_data["agriculture"] != "":
+        country_data["agriculture"] = str(100 * float(country_data["agriculture"]))[:4]
+    else:    
+        country_data["agriculture"] = "-"
+    if country_data["industry"] != "":
+        country_data["industry"] = str(100 * float(country_data["industry"]))[:4]
+    else:
+        country_data["industry"] = "-"
+    if country_data["service"] != "":
+        country_data["service"] = str(100 * float(country_data["service"]))[:4]
+    else:
+        country_data["service"] = "-"
 
     # Define general information groups
     general_info_groups = [
@@ -339,9 +353,9 @@ def country_view(request, iso_country):
             "category": "Economy",
             "items": [
                 ("GDP", country_data["gdp"], "💰", "$", "per Capita"),
-                ("Agriculture", str(100 * float(country_data["agriculture"]))[:4], "🚜", "", "%"),
-                ("Industry", str(100 * float(country_data["industry"]))[:4], "🏭", "", "%"),
-                ("Service", str(100 * float(country_data["service"]))[:4], "🛠️", "", "%"),
+                ("Agriculture", country_data["agriculture"], "🚜", "", "%"),
+                ("Industry", country_data["industry"], "🏭", "", "%"),
+                ("Service", country_data["service"], "🛠️", "", "%"),
             ]
         },
         {

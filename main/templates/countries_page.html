@@ -24,27 +24,8 @@
                     <div class="info-item">
                         <div class="icon">{{ icon }}</div>
                         <div class="text">
-                            <!-- {% if group.category == "Agriculture" %}
-                                <div class="label">{{ field }}</div>
-                                <div class="value">{{ value }}%</div>
-                            {% else %}
-                                {% if field == "Area" %}
-                                    <div class="label">{{ field }}</div>
-                                    <div class="value">{{ value }} mi²</div>
-                                {% elif field == "Population" %}
-                                    <div class="label">{{ field }}</div>
-                                    <div class="value">{{ value }} mi²</div>
-                                {% else %}
-                                    <div class="label">{{ field }}</div>
-                                    <div class="value">{{ value }}</div>
-                                {% endif %}
-                            {% endif %} -->
-                            <!-- {% if not value %}
-                                <div class="label">{{ field }}</div>
-                            {% else %} -->
                                 <div class="label">{{ field }}</div>
                                 <div class="value">{{ prefix }}{{ value }} {{ suffix }}</div>
-                            <!-- {% endif %} -->
                         </div>
                     </div>
                 {% endfor %}
