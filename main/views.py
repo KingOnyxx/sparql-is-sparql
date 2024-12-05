@@ -10,8 +10,8 @@ from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
-# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
-SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
+SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+# SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 from django.core.paginator import Paginator
@@ -301,44 +301,59 @@ def country_view(request, iso_country):
         'industry': result.get("IndustryRatio", ""),
         'service': result.get("ServiceRatio", ""), 
     }
+    if country_data["climate"] == "1":
+        country_data["climate"] = "Tropical"
+    elif country_data["climate"] == "1.5":
+        country_data["climate"] = "Mixed tropical and polar"
+    elif country_data["climate"] == "2":
+        country_data["climate"] = "Dry/arid"
+    elif country_data["climate"] == "2.5":
+        country_data["climate"] = "Mixed dry/arid and polar"
+    elif country_data["climate"] == "3":
+        country_data["climate"] = "Temperate"
+    elif country_data["climate"] == "4":
+        country_data["climate"] = "Continental (cold)"
+    else:
+        country_data["climate"] = "-"
+
 
     # Define general information groups
     general_info_groups = [
         {
             "category": "Demographics",
             "items": [
-                ("Population", country_data["population"], "👥"),
-                ("Area", country_data["area"], "📐"),
-                ("Population Density", country_data["pop_density"], "📊"),
+                ("Population", country_data["population"], "👥", "", "People"),
+                ("Area", country_data["area"], "📐", "", "mi²"),
+                ("Population Density", country_data["pop_density"], "📊", "", "/ mi²"),
             ]
         },
         {
             "category": "Agriculture",
             "items": [
-                ("Arable", country_data["arable"], "🌾"),
-                ("Crops", country_data["crops"], "🌽"),
-                ("Other", country_data["other"], "🔍"),
+                ("Arable", country_data["arable"], "🌾", "", "%"),
+                ("Crops", country_data["crops"], "🌽", "", "%"),
+                ("Other", country_data["other"], "🔍", "", "%"),
             ]
         },
         {
             "category": "Economy",
             "items": [
-                ("GDP", country_data["gdp"], "💰"),
-                ("Agriculture", country_data["agriculture"], "🚜"),
-                ("Industry", country_data["industry"], "🏭"),
-                ("Service", country_data["service"], "🛠️"),
+                ("GDP", country_data["gdp"], "💰", "$", "per Capita"),
+                ("Agriculture", str(100 * float(country_data["agriculture"]))[:4], "🚜", "", "%"),
+                ("Industry", str(100 * float(country_data["industry"]))[:4], "🏭", "", "%"),
+                ("Service", str(100 * float(country_data["service"]))[:4], "🛠️", "", "%"),
             ]
         },
         {
             "category": "Miscellaneous",
             "items": [
-                ("Net Migration", country_data["net_migration"], "✈️"),
-                ("Infant Mortality", country_data["infant_mortality"], "👶"),
-                ("Literacy Rate", country_data["literacy"], "📖"),
-                ("Phones", country_data["phones"], "📱"),
-                ("Climate", country_data["climate"], "🌦️"),
-                ("Birthrate", country_data["birthrate"], "🤱"),
-                ("Deathrate", country_data["deathrate"], "⚰️"),
+                ("Net Migration", country_data["net_migration"], "✈️", "", "Number of migrants / 1000 people"),
+                ("Infant Mortality", country_data["infant_mortality"], "👶", "", "Deaths / 1000 live births"),
+                ("Literacy Rate", country_data["literacy"], "📖", "", "%"),
+                ("Phones", country_data["phones"], "📱", "", "/ 1000 People"),                    
+                ("Climate", country_data["climate"], "🌦️", "", ""),
+                ("Birthrate", country_data["birthrate"], "🤱", "", "Births / 1000 people per year"),
+                ("Deathrate", country_data["deathrate"], "⚰️", "", "Deaths / 1000 people per year"),
             ]
         },
     ]
