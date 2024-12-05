@@ -3,7 +3,7 @@
       {
         "src": "Airports/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb" }
+        "config": { "maxLambdaSize": "15mb" , "runtime": "python3.13", "buildCommand": "pip install -r requirements.txt" }
 
       }
     ],
