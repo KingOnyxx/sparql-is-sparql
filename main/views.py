@@ -10,8 +10,8 @@ from .region_queries import region_queries
 from django.shortcuts import render
 from django.core.paginator import Paginator
 
-# SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
-SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
+SPARQL = SPARQLWrapper("http://localhost:7200/repositories/airports")
+# SPARQL = SPARQLWrapper("http://34.50.87.161:7200/repositories/airports")
 WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql'
 
 from django.core.paginator import Paginator
